@@ -21,8 +21,8 @@ python3 main.py
 _Note: Use python, if python3 not working._
 
 ### Go to browser and open the following url:
-_http://localhost:4100/customer-login_ for Customer login page.
-_http://localhost:4100/admin-login_ for Admin login page.
+- _http://localhost:4100/customer-login_ for Customer login page.
+- _http://localhost:4100/admin-login_ for Admin login page.
 
 _Note: There is NO html page for http://localhost:4100/ root._
 ### Below is the sample Admin login credentials :
