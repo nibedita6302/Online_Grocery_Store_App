@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include 'header.html.j2' %}
+		<title> User Home Page </title>
+		<style>
+			b{ 
+				color: white; 
+			}
+			body {
+  				background-image: url("{{ url_for('static', filename='images/home_background.jpg') }}");
+				background-repeat: no-repeat; 
+ 				background-attachment: fixed;
+  				background-size: 100% 100%;
+			} 
+		</style>  
+	</head> 
+	<body> 
+		{% include 'nav_bar.html.j2' %} 
+        <div class="container-sm">
+			<div class="row justify-content-start"> 
+				{% if bought == [] %}
+					<h3> No Orders Yet!</h3>
+					<p> Hurry Up! Buy Something. </p>
+				{% endif %}
+				
+				{% for tran in bought %}
+                    {% include 'customer_applications/order.html.j2' %}
+				{% endfor %}
+			</div>
+		</div>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include 'header.html.j2' %}
+		<title> Category Form Page</title>
+		<style>
+			b{ 
+				color: white;  
+			}
+			body {
+  				background-image: url("{{ url_for('static', filename='images/home_background.jpg') }}");
+				background-repeat: no-repeat;
+ 				background-attachment: fixed;
+  				background-size: 100% 100%;
+			}
+		</style>   
+	</head>  
+	<body> 
+		<div class="container-sm justify-content-center" style="padding-top: 10%;">
+			<div class="card">
+				<div class="card-title">Update or Create Category</div>
+				<div class="card-body">
+					<form method="POST" action="{{url_for('editCategory', id=id)}}">
+						{% if id != 999 %}
+							<input type="hidden" name="method" value="put"/>
+							<input type="text" name="name" value="{{category.category_name|title}}" maxlength="20" required>
+						{% else %}
+							<input type="text" name="name" maxlength="20" required>
+						{% endif %}
+						<button type="submit" class="btn btn-success">CONFIRM</button>
+					</form>
+				</div>
+			</div>
+		</div>
+    </body>
+</html>

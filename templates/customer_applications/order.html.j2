@@ -1,0 +1,28 @@
+<div class="card mb-3 border-dark h-100" >
+    <div class="card-body">
+        <div class="row">
+            <div class="col-sm-7"><h5 class="card-title"> Order ID: {{ tran[0].order_id }}</h5></div>
+            <div class="col-sm-5"><p class="card-title"> Order Date: {{ tran[0].bought_date }}</p></div>
+        </div>
+        <table class="table table-striped">
+            <tr class="table-success">
+                <th> Product Name </th>
+                <th> Seller </th>
+                <th> Quantity </th>
+                <th> Price </th>
+            </tr>
+            {% for t in tran[1] %}
+                <tr>
+                    <td> {{ t.product_name |title }} </td>
+                    <td> {{ t.seller |title }} </td>
+                    <td> {{ t.product_count }} </td>
+                    <td> ₹{{ t.totalProductAmount }} </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="row">
+            <div class="col-sm-7"><p class="card-text">Delivery Charges: ₹50.00</p></div>
+            <div class="col-sm-5"><h5 class="card-title">Total Payment: ₹{{ tran[0].totalOrderAmount }} </h5> </div>
+        </div>
+    </div>
+</div>

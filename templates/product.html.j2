@@ -1,0 +1,40 @@
+{% if (p.stock_count - p.totalSale_count)==0 %}
+	{% set stock_msg = 'Out of Stock' %}
+	{% set stock_color = 'red' %}
+{% elif (p.stock_count - p.totalSale_count)<5 %}
+	{% set stock_msg = 'Few Left, Hurry Up!' %}
+	{% set stock_color = 'red' %}
+{% else %}
+	{% set stock_msg = 'In Stock' %}
+	{% set stock_color = 'green' %}
+{% endif %} 
+ 
+<div class="col-sm-4">
+	<div class="card mb-3 border-light h-100" >
+    	<div class="row g-0">
+			<img src="{{ url_for('static', filename='images/products/'+ p.image_path) }}" class="card-img-start" height="100" alt="product-id">
+			<div class="col-md">
+				<div class="card-body">
+					<h5 class="card-title">{{ p.product_name|title }}</h5>
+					<p class="card-text">{{ p.description }}</p>
+				</div> 
+			</div>
+		</div> 
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item" style="color:{{stock_color}};">{{stock_msg}}</li>
+			<li class="list-group-item">Buy: {{ p.minAmount }} {{ p.units }} - ₹{{ p.price }}</li>
+			<li class="list-group-item">Seller - {{ p.seller|title }}</li>
+		</ul>
+		
+		<div class="card-footer"> 
+			<form method="POST" action="{{ url_for('my_Cart', user_id=session['customer'], cart_id=session['cart_id']) }}">
+				<input type="hidden" name="method" value="post"/>
+				<input type="hidden" name="product" value="{{ p.product_id }}"/>
+				<label for="totalQty">Quantity</label> 
+				<input type="number" id="totalQty" value="1" min="1" max="{{ p.stock_count - p.totalSale_count }}" step="1" name="qty" style="width: 50px;"/>
+				<button class="btn btn-warning" type="submit">ADD</button>
+			</form>
+		</div>
+		
+	</div> 
+</div>   

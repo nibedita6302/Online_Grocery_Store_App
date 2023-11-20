@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include 'header.html.j2' %}
+		<title> Logistics Page </title>
+		<style>
+			body {
+  				background-image: url("{{ url_for('static', filename='images/home_background.jpg') }}");
+				background-repeat: no-repeat;
+ 				background-attachment: fixed;
+  				background-size: 100% 100%;
+			}
+			h1,h3,h5{
+				text-align: center;
+			}
+			b{
+				color: white;
+			}
+		</style>
+	</head>
+	<body>
+		{% include 'admin_applications/nav_up.html.j2' %}
+		<h1> Check Your Sales Logistics Here! </h1><br>
+		<div class="container" style="padding: 0;">
+			<div class="row align-items-center">
+				<div class="card mb-3">
+					<div class="card-body ">
+						<h3 class="card-title">Top 5 Product of All Time</h3>
+						<table class="table table-striped">
+							<thead class="table-success"> 
+								<tr>
+									<th scope="col">Sl. No.</th>
+									<th scope="col">Product Name</th>
+									<th scope="col">Sale (₹)</th>
+									<th scope="col">Category Name</th>
+									<th scope="col">Brand Name</th>
+								</tr>
+							</thead>
+							{% for p in range(products|length) %}
+								<tbody>
+									<tr>
+										<td scope="col">{{p}}</td>
+										<td scope="col">{{products[p].product_name|title}}</td>
+										<td scope="col">{{products[p].total_sales}}</td>
+										<td scope="col">{{products[p].category_name|title}}</td>
+										<td scope="col">{{products[p].seller|title}}</td>
+									</tr>
+								</tbody>
+							{% endfor %}
+						</table> 
+					</div>
+				</div>
+			</div>
+			<div class="row align-items-center">
+				<div class="card mb-3">
+					<div class="card-body ">
+						<h3 class="card-title"> Category Wise Sale</h3>
+					</div>
+					<img src="{{ url_for('static', filename='images/'+ plot_path) }}" class="card-img-start" alt="sales_plot">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include 'header.html.j2' %}
+		<title> My Cart </title>
+		<style>
+			b{ 
+				color: white; 
+			}
+            body {
+  				background-image: url("{{url_for('static', filename='images/home_background.jpg')}}"); 
+				background-repeat: no-repeat;
+ 				background-attachment: fixed;
+  				background-size: 100% 100%;
+			} 
+		</style>  
+	</head>
+	<body> 
+		{% include 'nav_bar.html.j2' %}
+
+        {% set link = '#confirmBuy' %}
+        {% if alert %}
+            {% set link = '#' %}
+        {% endif %}
+		<div class="container-sm">
+            {% include 'alert.html.j2' %}
+			<div class="row justify-content-center">  
+                <div class="col-sm-6">
+                    <h1> My Shopping List </h1> 
+                    <!-- {{p_count}} -->
+                    {% for p in shoppingList %}
+
+                        {% set count = p_count[loop.index-1] %}
+                        <!-- {{p.product_name}} {{count}} -->
+
+                        {% include 'cart_product.html.j2' %} 
+
+                    {% endfor %}
+
+                </div> 
+                <div class="col-sm-6">
+                    <h1> Buy Now </h1> 
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sub-Total: ₹{{ subtotal }}</h5>
+                                    <a class="btn btn-warning " data-bs-toggle="collapse" aria-expanded="false" aria-controls="ShowProducts" type="submit" href={{link}}>BUY NOW</a>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                    
+					<div class="collapse" id="confirmBuy">
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                <div class="card-footer">
+                                    <h5 class="card-title">Sub-Total: ₹{{ subtotal }}</h5>
+                                    <p class="card-text">Delivery Chargers: ₹50.00 </p>
+                                    <h5 class="card-title">Total Payment: ₹{{ (subtotal|float) + 50.00 }}</h5>
+                                    <form method="GET" action="{{ url_for('placeOrder', user_id=session['customer']) }}">
+                                        <button class="btn btn-success" type="submit"> CONFIRM PAYEMENT </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends 'base_search.html' %}
+	
+{% block nav_up %} 
+	{% include 'admin_applications/nav_up.html.j2' %}  
+{% endblock %}
+
+{% block content %} 
+	{% if pSet == [] and cSet == [] %}
+		<h3> No matching result :( </h3>
+		<p> Check if you made any spelling mistakes.</p>
+	{% else %}
+		{% for p in pSet %}
+			{% include 'admin_applications/edit_product.html.j2' %}  
+		{% endfor %}
+
+		<hr style="height:5px;background-color: white;">
+		<hr style="height:5px;background-color: white;">
+
+		{% for c in cSet %}
+			{% include 'admin_applications/edit_category.html.j2' %}
+		{% endfor %}
+	{% endif %}
+
+{% endblock %} 
+
+
+{% block nav_down %} 
+	{% include 'admin_applications/nav_down.html.j2' %}  
+{% endblock %}

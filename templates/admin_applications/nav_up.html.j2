@@ -1,0 +1,33 @@
+<nav class="navbar navbar-expand-lg navbar-light " style="background-color: #0e9720;">
+    <div class="container-fluid navig">
+        <div class="row">
+            <div class="col-sm-3">
+                <a class="navbar-brand" href="{{ url_for('logistics') }}" > 
+                    <img src="{{ url_for('static', filename='images/logistics.jpg') }}" alt="logistics" width="40" height="40" class="d-inline-block align-text-center">
+                        <b>Logistics</b> 
+                </a>
+            </div>
+            <div class="col-sm-3">
+                <a class="navbar-brand" href="{{ url_for('adminControl', admin_id=session['admin']) }}">
+                    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="logo" width="40" height="40" class="d-inline-block align-text-center">
+                        <b>GreenGrocery</b>
+                </a> 
+            </div>  
+            <div class="col-sm-3">
+                <form class="d-flex" method="POST" action="{{ url_for('searchBar', user='admin') }}" >
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchItems">
+                    <button class="btn btn-outline-light" type="submit">Search</button>
+                </form>
+            </div>
+            <div class="col-sm-3">
+                <a class="navbar-brand dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="profile" width="40" height="40" class="img-responsive d-inline-block align-text-center">
+                        <b>Admin</b>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('adminLogin') }}">Logout</a></li>
+                </ul>
+            </div>
+        </div> 
+    </div>
+</nav>

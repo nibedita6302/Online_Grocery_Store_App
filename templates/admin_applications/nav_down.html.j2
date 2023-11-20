@@ -1,0 +1,18 @@
+<nav class="navbar navbar-expand-lg navbar-light position-fixed bottom-0 overflow-hidden" style="background-color: #bdf2c4;width:100%;">
+    <div class="container-fluid navig justify-content-center">
+        <div class="row">
+            <div class="col-sm-6">
+                <a class="navbar-brand" href="{{ url_for('editProduct', id=999) }}" > 
+                    <img src="{{ url_for('static', filename='images/add_product.jpg') }}" alt="addProd" width="40" height="40" class="d-inline-block align-text-center">
+                        <em>ADD PRODUCT</em> 
+                </a>
+            </div> 
+            <div class="col-sm-6">
+                <a class="navbar-brand" href="{{ url_for('editCategory', id=999) }}" > 
+                    <img src="{{ url_for('static', filename='images/add_category.jpg') }}" alt="addCat" width="40" height="40" class="d-inline-block align-text-center">
+                        <em>ADD CATEGORY</em> 
+                </a>
+            </div> 
+        </div>
+    </div>
+</nav>

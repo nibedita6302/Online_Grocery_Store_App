@@ -1,0 +1,32 @@
+<div class="col-sm-4">
+	<div class="card mb-3 border-light h-100" >
+    	<div class="row g-0">
+			<img src="{{ url_for('static', filename='images/products/'+ p.image_path) }}" class="card-img-start" height="100" alt="product-id">
+			<div class="col-md">
+				<div class="card-body">
+					<h5 class="card-title">ID: {{ p.product_id }} </h5>
+					<h5 class="card-title">Name: {{ p.product_name|title }}</h5>
+					<p class="card-text">{{ p.description }}</p>
+				</div> 
+			</div>  
+		</div> 
+		<ul class="list-group list-group-flush">
+			<li class="list-group-item">Seller - {{ p.seller|title }}</li>
+			<li class="list-group-item">Minimum Buying: {{ p.minAmount }} {{ p.units }} - ₹{{ p.price }}</li>
+			<li class="list-group-item">Total Stock: {{ p.stock_count }}</li>
+			<li class="list-group-item">Stock Remaining: {{ p.stock_count - p.totalSale_count}}</li>
+		</ul>
+		
+		<div class="card-footer"> 
+			<form method="POST" action="{{ url_for('editProduct', id=p.product_id)}}" style="float:left;">
+				<input type = 'hidden' name='method' value='delete'/>
+				<button class="btn btn-danger" type="submit">DELETE</button>
+			</form>
+
+			<form method="POST" action="{{ url_for('editProduct', id=p.product_id)}}" style="float:right;">
+				<input type="hidden" name="method" value="put"/>
+				<button class="btn btn-warning" type="submit">UPDATE</button>
+			</form>
+		</div>
+	</div> 
+</div>    

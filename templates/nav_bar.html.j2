@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #0e9720;">
+    <div class="container-fluid navig">
+        <div class="row">
+            <div class="col-sm-3">
+                <a class="navbar-brand" href="{{ url_for('my_Cart', user_id=session['customer'], cart_id=session['cart_id']) }}" > 
+                    <img src="{{ url_for('static', filename='images/myCart.jpg') }}" alt="myCart" width="40" height="40" class="d-inline-block align-text-center">
+                        <b>My Cart</b> 
+                </a>
+            </div>
+            <div class="col-sm-3">
+                <a class="navbar-brand" href="{{ url_for('homePage', user_id=session['customer']) }}">
+                    <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="logo" width="40" height="40" class="d-inline-block align-text-center">
+                        <b>GreenGrocery</b>
+                </a> 
+            </div>
+            <div class="col-sm-3">
+                <form class="d-flex" method="POST" action="{{ url_for('searchBar', user='customer')}}">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="searchItems">
+                    <button class="btn btn-outline-light" type="submit">Search</button>
+                </form>
+            </div>
+            <div class="col-sm-3">
+                <a class="navbar-brand dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="profile" width="40" height="40" class="img-responsive d-inline-block align-text-center">
+                        <b>My Profile</b>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                    <li><a class="dropdown-item" href="{{ url_for('myProfile', user_id=session['customer']) }}">Edit Profile</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('myOrders', user_id=session['customer']) }}">My Orders</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('customerLogin') }}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

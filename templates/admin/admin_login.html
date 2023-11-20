@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		{% include 'header.html.j2' %}
+		<title> Admin Login Page </title>
+		<style type="text/css" rel="stylesheet">
+			body {
+  				background-image: url("{{ url_for('static', filename='images/login_background.jpg')}}");
+				background-repeat: no-repeat;
+ 				background-attachment: fixed;
+  				background-size: 100% 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+            {% include 'alert.html.j2' %}
+			<div class="row">
+				<div class="col-6"></div>
+				<div class="col-6">
+					<h1> Welcome Admin</h1>
+					<form method="post">
+						<fieldset>  
+						<legend><b>Login Here</b></legend>  
+						<div class="mb-3">
+								<label for="adminID" class="form-label">Admin ID</label>
+								<input type="text" class="form-control" id="adminID", name="admin_id">
+						</div>
+						<div class="mb-3">
+								<label for="admin_paswrd" class="form-label">Password</label>
+								<input type="password" class="form-control" id="admin_paswrd" name="password">
+						</div>
+						<div class="btn-toolbar mb-3" role="toolbar">
+							<div class="me-2">
+								<button type="submit" class="btn btn-warning btn-sm">Submit</button>
+							</div>
+						</div>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
