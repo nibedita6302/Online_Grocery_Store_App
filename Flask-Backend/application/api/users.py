@@ -2,12 +2,14 @@ from application.data.models.users import *
 from application.data.models.offers import CustomerOffers
 from application.data.models.shopping import MyCart
 from application.utils import hash_password
-from flask_restful import Resource, fields, marshal, reqparse
+from flask_restful import Resource, Api, fields, marshal, reqparse
 from application.data.database import db
 from application.sec import datastore
 from flask import abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_security import auth_required, roles_required
+
+# api = Api(prefix="/api")
 
 login_fields = {
     'message': fields.String,
@@ -168,3 +170,10 @@ class AddressCRUD(Resource):
         db.session.commit()
         return 200
     
+
+# api.add_resource(Login, "/login")
+# api.add_resource(Logout, "/logout")
+# api.add_resource(CustomerRegister, "/customer/register")
+# api.add_resource(StoreManagerRegister, '/store-manager/register')
+# api.add_resource(AddressCRUD, '/customer/<int:user_id>/address')
+# api.add_resource(ManagerApproval,'/admin/store-manager-approvals','/admin/store-manager-approvals/<int:id>')

@@ -17,12 +17,12 @@ from flask_security import utils
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 app = None
-api = None 
+api = None
 celery = None
 cache = None
 
 def create_app():
-    app = Flask(__name__, template_folder="templates")
+    app = Flask(__name__, template_folder="templates", static_folder="../Frontend", static_url_path='/static')
     print(os.getenv('ENV', "development"))
     if os.getenv('ENV', "development") == "production":
       app.logger.info("Currently no production config is setup.")
@@ -77,12 +77,16 @@ login_manager = LoginManager()
 #app, api, celery, cache = create_app()
 app ,api = create_app()
 
+# import models in main
 from application.data.models.users import *
 from application.data.models.offers import *
 from application.data.models.shopping import *
 from application.data.models.inventory import *
 from application.data.models.confirmation import *
 from application.data.default_data import create_first, new_customer_offer
+
+# import controllers in main
+from application.controllers.home import *
 
 with app.app_context():
   db.create_all()
@@ -96,7 +100,7 @@ def load_user(user_id):
    return Users.query.get(int(user_id)) 
 
 # Import all restful apis
-'''from application.api.api_routes import *'''
+# from application.api.users import api
 
 from application.api.users import Login, Logout
 api.add_resource(Login, "/login")
@@ -140,7 +144,6 @@ api.add_resource(CategoryOfferCRUD, '/offers-category', '/offers-category/add/<i
 from application.api.search import Search
 api.add_resource(Search, '/search')
 
-                 
 if __name__ == '__main__':
   # Run the Flask app
   app.run(host='0.0.0.0',port=8080, debug=True)
