@@ -19,15 +19,15 @@ offer_fields = {
 class CustomerOfferCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('o_name', type=str)
-        self.parser.add_argument('description', type=str)
+        self.parser.add_argument('o_name', type=str.lower)
+        self.parser.add_argument('description', type=str.lower)
         self.parser.add_argument('discount', type=int)
         self.parser.add_argument('use_count', type=int)
         self.parser.add_argument('price', type=float)
     
     def get(self):
         offer_data = Offers.query.filter_by(is_active=True).all()
-        return marshal(offer_data, offer_fields), 200
+        return marshal(offer_data[1:], offer_fields), 200
     
     @roles_required('store_manager')
     @login_required
@@ -44,12 +44,13 @@ class CustomerOfferCRUD(Resource):
         db.session.commit()
         return 200
     
-    @roles_required('customer')
+    @roles_required('customer')   # customer buying offer
     @login_required
     def put(self, user_id, o_id):
         offer = Offers.query.filter_by(o_id=o_id).first()
-        cust_offer = CustomerOffers(user_id=user_id, o_id=o_id, use_count=offer.use_count)
-        db.session.add(cust_offer)
+        cust_offer = CustomerOffers(user_id=user_id, o_id=o_id)
+        cust_offer.set_use_count()
+        db.session.add(cust_offer)  
         db.session.commit()
         return {'message':'The offer has been added to your account'}, 200
 
@@ -61,7 +62,7 @@ class CustomerOfferCRUD(Resource):
         offer.is_active=False
         # add to logs
         log = Logs(user_id=current_user.id, action='DELETE', table_name=offer.__tablename__, 
-                   action_on=offer.o_id, date=datetime.now())
+                   action_on=offer.o_id, date=datetime.now(), is_admin=1)
         db.session.add(log)
         db.session.commit()
         return {'message':f'Offer {o_id} has been deactivated'}, 200
@@ -79,8 +80,8 @@ category_fields = {
 class CategoryOfferCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('o_name', type=str)
-        self.parser.add_argument('description', type=str)
+        self.parser.add_argument('o_name', type=str.lower)
+        self.parser.add_argument('description', type=str.lower)
         self.parser.add_argument('discount', type=int)
     
     def get(self):
@@ -104,7 +105,7 @@ class CategoryOfferCRUD(Resource):
         # add to logs
         offer = CategoryOffers.query.order_by(CategoryOffers.o_id.desc()).first()
         log = Logs(user_id=current_user.id, action='POST', table_name=offer.__tablename__, 
-                   action_on=offer.o_id, date=datetime.now())
+                   action_on=offer.o_id, date=datetime.now(), is_admin=1)
         catg = Category.query.get(c_id)
         catg.o_id = offer.o_id
         db.session.add(log)
@@ -118,7 +119,7 @@ class CategoryOfferCRUD(Resource):
         db.session.delete(co)
         # add to logs
         log = Logs(user_id=current_user.id, action='DELETE', table_name=co.__tablename__, 
-                   action_on=co.o_id, date=datetime.now())
+                   action_on=co.o_id, date=datetime.now(), is_admin=1)
         db.session.add(log)
         db.session.commit()
         return {'message':f'Offer {o_id} has been deleted'}, 200

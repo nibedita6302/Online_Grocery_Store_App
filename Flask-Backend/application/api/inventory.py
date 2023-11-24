@@ -28,25 +28,21 @@ class ProductCRUD(Resource):
     
     def __init__(self):      
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('p_name', type=str)
-        self.parser.add_argument('p_description', type=str)
+        self.parser.add_argument('p_name', type=str.lower)
+        self.parser.add_argument('p_description', type=str.lower)
         self.parser.add_argument('p_qty', type=int)
-        self.parser.add_argument('unit', type=str)
+        self.parser.add_argument('unit', type=str.lower)
         self.parser.add_argument('price', type=float)
         self.parser.add_argument('stock', type=int)
-        self.parser.add_argument('p_image', type=str)
-        self.parser.add_argument('expieryDate', type=str)
+        self.parser.add_argument('p_image', type=str.lower)
+        self.parser.add_argument('expieryDate', type=str.lower)
         self.parser.add_argument('c_id', type=int)
         self.parser.add_argument('b_id', type=int)
     
     def get(self, p_id):
         product_data = Products.query.get(p_id)
         return marshal(product_data, product_fields),  200
-
-    def get(self, c_id):
-        product_data = Products.query.filter_by(c_id=c_id).all()
-        return marshal(product_data, product_fields),  200
-    
+  
     @roles_required('store_manager')
     @login_required
     def post(self):
@@ -76,6 +72,8 @@ class ProductCRUD(Resource):
             if col.name in args:
                 if col.name == 'expieryDate':
                     args['expieryDate'] = datetime.strptime(args['expieryDate'],f'%Y-%m-%d')
+                elif col.name == 'stock':
+                    p1.stock_remaining = args['stock']
                 setattr(p1,col.name,args[col.name])
         log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
                    action_on=p_id, date=datetime.now())
@@ -94,6 +92,11 @@ class ProductCRUD(Resource):
         db.session.commit()
         return {'message':f'Product (p_id:{p_id}) deletion confirmed.'}, 200
 
+class ProductCategoryView(Resource):
+    def get(self, c_id):
+        product_data = Products.query.filter_by(c_id=c_id).all()
+        return marshal(product_data, product_fields),  200
+  
 brand_fields = {
     'b_name' : fields.String,
     'b_description': fields.String
@@ -104,8 +107,8 @@ class BrandCRUD(Resource):
 
     def __init__(self):    
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('b_name', type=str)
-        self.parser.add_argument('b_description', type=str)
+        self.parser.add_argument('b_name', type=str.lower)
+        self.parser.add_argument('b_description', type=str.lower)
     
     def get(self, b_id):
         brand_data = Brands.query.get(b_id)
@@ -169,10 +172,10 @@ class CategoryCRUD(Resource):
 
     def __init__(self):        
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('c_name', type=str)
+        self.parser.add_argument('c_name', type=str.lower)
         self.parser.add_argument('product_count', type=int)
         self.parser.add_argument('o_id', type=int)
-        self.parser.add_argument('c_image', type=str)
+        self.parser.add_argument('c_image', type=str.lower)
     
     def get(self):
         category_data = Category.query.all()
@@ -232,7 +235,7 @@ review_fields = {
 class ReviewCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('review', type=str)
+        self.parser.add_argument('review', type=str.lower)
         self.parser.add_argument('rating', type=int)
     
     def get(self, p_id):

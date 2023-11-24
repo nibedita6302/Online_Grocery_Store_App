@@ -17,7 +17,7 @@ from flask_security import utils
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 
 app = None
-api = None
+api = None 
 celery = None
 cache = None
 
@@ -82,12 +82,13 @@ from application.data.models.offers import *
 from application.data.models.shopping import *
 from application.data.models.inventory import *
 from application.data.models.confirmation import *
-from application.data.default_data import create_first
+from application.data.default_data import create_first, new_customer_offer
 
 with app.app_context():
   db.create_all()
   print('All models created.')
   create_first() #create default roles and admin
+  new_customer_offer() #default new customer offer
   print('All default data created.')
 
 @login_manager.user_loader
@@ -109,9 +110,10 @@ api.add_resource(AddressCRUD, '/customer/<int:user_id>/address')
 from application.api.users import ManagerApproval
 api.add_resource(ManagerApproval,'/admin/store-manager-approvals','/admin/store-manager-approvals/<int:id>')
 
-from application.api.inventory import ProductCRUD, BrandCRUD, CategoryCRUD, ReviewCRUD
-api.add_resource(ProductCRUD, '/product/<int:p_id>', '/product/category/<int:c_id>',
-                 '/product/<int:p_id>/edit', '/product/create', '/product/<int:p_id>/delete')
+from application.api.inventory import ProductCRUD, ProductCategoryView, BrandCRUD, CategoryCRUD, ReviewCRUD
+api.add_resource(ProductCRUD, '/product/<int:p_id>', '/product/<int:p_id>/edit',
+                  '/product/create', '/product/<int:p_id>/delete')
+api.add_resource(ProductCategoryView, '/product/category/<int:c_id>',)
 api.add_resource(BrandCRUD, '/brand/<int:b_id>', '/brand/<int:b_id>/edit', '/brand/create', 
                  '/brand/<int:b_id>/delete')
 api.add_resource(CategoryCRUD, '/category', '/category/<int:c_id>/edit', '/category/create', 
@@ -134,6 +136,10 @@ api.add_resource(CustomerOfferCRUD, '/offers-customer', '/offers-customer/<int:o
                 '/offers-customer/create', '/customer/<int:user_id>/buy-offer/<int:o_id>')
 api.add_resource(CategoryOfferCRUD, '/offers-category', '/offers-category/add/<int:c_id>', 
                  '/offers-category/<int:o_id>/delete')
+
+from application.api.search import Search
+api.add_resource(Search, '/search')
+
                  
 if __name__ == '__main__':
   # Run the Flask app

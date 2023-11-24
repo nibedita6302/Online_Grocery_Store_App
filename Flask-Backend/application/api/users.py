@@ -1,4 +1,5 @@
 from application.data.models.users import *
+from application.data.models.offers import CustomerOffers
 from application.data.models.shopping import MyCart
 from application.utils import hash_password
 from flask_restful import Resource, fields, marshal, reqparse
@@ -61,7 +62,11 @@ class CustomerRegister(Resource):
             db.session.commit()
             u1 = Users.query.filter_by(email=args['email']).first()
             mc = MyCart(user_id=u1.id)   # assign a cart to every new customer
+            co = CustomerOffers(user_id=u1.id, o_id=1)
+            print(co)
+            co.set_use_count()
             db.session.add(mc)
+            db.session.add(co)
             db.session.commit()
             return {'message':'Successfully registered new Users.', 'token':u1.fs_uniquifier}, 200
         return {'message': 'Email already exists.'}, 400
@@ -125,7 +130,7 @@ class AddressCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('a_id', type=int)
-        self.parser.add_argument('address', type=str)
+        self.parser.add_argument('address', type=str.lower)
         self.parser.add_argument('pincode', type=str, help='Enter only 7 digits.')
 
     @roles_required('customer')

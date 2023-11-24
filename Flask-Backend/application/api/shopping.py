@@ -110,6 +110,7 @@ class TransactionConfirm(Resource):
         return result, 200
         
 obj = SetID()
+obj.set_count()
 
 class PlaceOrder(Resource):    
     @roles_required('customer')

@@ -18,15 +18,22 @@ def create_first():
     db.session.commit()    
 
 class SetID:
-    count = Transaction.query.order_by(Transaction.t_id.desc()).first().t_id
+    count = 1
+
+    def set_count(self):
+        t = Transaction.query.order_by(Transaction.t_id.desc()).first()
+        if t is not None:
+            SetID.count = t.t_id
 
     def next_id(self):
-        print(self.count)
-        self.count+=1
-        return self.count
+        print(SetID.count)
+        SetID.count+=1
+        return SetID.count
     
 def new_customer_offer():
-    offer = Offers(o_name='Welcome Harvest', description="New Customer Welcome Offer.",
-                discount=25, use_count=5 )
-    db.session.add(offer)
-    db.session.commit()
+    if Offers.query.filter_by(o_name='Welcome Harvest').first() is None:
+        offer = Offers(o_name='Welcome Harvest', description="New Customer Welcome Offer.",
+                    discount=25, use_count=5, price=0)
+        db.session.add(offer)
+        db.session.commit() 
+    

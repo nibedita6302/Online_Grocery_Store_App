@@ -37,6 +37,10 @@ class CustomerOffers(db.Model):
     o_id = db.Column(db.Integer, db.ForeignKey('offers.o_id'), primary_key=True) 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     use_count = db.Column(db.Integer) # number of valid usage
+
+    def set_use_count(self):
+        offer = Offers.query.get(self.o_id)
+        self.use_count=offer.use_count
     
 class CategoryOffers(db.Model):
     __tablename__ = 'category_offers'
