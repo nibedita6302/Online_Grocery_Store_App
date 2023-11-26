@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, Blueprint
 from flask_restful import Api
+from flask_cors import CORS
 from application import config
 from application.config import LocalDevelopmentConfig, StageConfig
 from application.data.database import db
@@ -53,6 +54,7 @@ def create_app():
 
     api = Api(app, prefix='/api')
     app.app_context().push()   
+    CORS(app)
     
     # Create celery   
     #celery = workers.celery
@@ -146,4 +148,4 @@ api.add_resource(Search, '/search')
 
 if __name__ == '__main__':
   # Run the Flask app
-  app.run(host='0.0.0.0',port=8080, debug=True)
+  app.run(host='0.0.0.0',port=8000, debug=True)
