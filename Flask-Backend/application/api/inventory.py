@@ -98,6 +98,7 @@ class ProductCategoryView(Resource):
         return marshal(product_data, product_fields),  200
   
 category_fields = {
+    'c_id': fields.Integer,
     'c_name': fields.String,
     'product_count': fields.Integer,
     'c_image': fields.String,

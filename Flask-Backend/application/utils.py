@@ -27,10 +27,8 @@ def search_brand(string):
     product_list = []
     for s in string.split():
         item = '%'+s+'%'
-        brand = Brands.query.filter(Brands.b_name.like(item)).all()
-        for b in brand:
-            p = b.products
-            product_list.extend(p)
+        p = Products.query.filter(Products.brand.like(item)).all()
+        product_list.extend(p)
     return product_list
 
 def search_product(string):
