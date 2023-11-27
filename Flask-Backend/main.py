@@ -87,9 +87,6 @@ from application.data.models.inventory import *
 from application.data.models.confirmation import *
 from application.data.default_data import create_first, new_customer_offer
 
-# import controllers in main
-from application.controllers.home import *
-
 with app.app_context():
   db.create_all()
   print('All models created.')
@@ -116,12 +113,10 @@ api.add_resource(AddressCRUD, '/customer/<int:user_id>/address')
 from application.api.users import ManagerApproval
 api.add_resource(ManagerApproval,'/admin/store-manager-approvals','/admin/store-manager-approvals/<int:id>')
 
-from application.api.inventory import ProductCRUD, ProductCategoryView, BrandCRUD, CategoryCRUD, ReviewCRUD
+from application.api.inventory import ProductCRUD, ProductCategoryView, CategoryCRUD, ReviewCRUD
 api.add_resource(ProductCRUD, '/product/<int:p_id>', '/product/<int:p_id>/edit',
                   '/product/create', '/product/<int:p_id>/delete')
 api.add_resource(ProductCategoryView, '/product/category/<int:c_id>',)
-api.add_resource(BrandCRUD, '/brand/<int:b_id>', '/brand/<int:b_id>/edit', '/brand/create', 
-                 '/brand/<int:b_id>/delete')
 api.add_resource(CategoryCRUD, '/category', '/category/<int:c_id>/edit', '/category/create', 
                  '/category/<int:c_id>/delete')
 api.add_resource(ReviewCRUD, '/product/<int:p_id>/review', '/customer/product/<int:p_id>/review')

@@ -11,6 +11,7 @@ from flask_security import auth_required, roles_required, roles_accepted
 product_fields = {
     'p_name': fields.String,
     'p_description' : fields.String,
+    'brand': fields.String,
     'p_qty' : fields.Integer,
     'unit': fields.String,
     'price' : fields.Float,
@@ -19,8 +20,7 @@ product_fields = {
     'p_image': fields.String,
     'is_deleted': fields.Float,
     'expieryDate' : fields.String,
-    'c_id' : fields.Integer, #needed??
-    'b_id' :fields.Integer
+    'c_id' : fields.Integer #needed??
 }
 
 class ProductCRUD(Resource):
@@ -30,6 +30,7 @@ class ProductCRUD(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('p_name', type=str.lower)
         self.parser.add_argument('p_description', type=str.lower)
+        self.parser.add_argument('brand', type=str.lower)
         self.parser.add_argument('p_qty', type=int)
         self.parser.add_argument('unit', type=str.lower)
         self.parser.add_argument('price', type=float)
@@ -37,7 +38,6 @@ class ProductCRUD(Resource):
         self.parser.add_argument('p_image', type=str.lower)
         self.parser.add_argument('expieryDate', type=str.lower)
         self.parser.add_argument('c_id', type=int)
-        self.parser.add_argument('b_id', type=int)
     
     def get(self, p_id):
         product_data = Products.query.get(p_id)
@@ -97,69 +97,6 @@ class ProductCategoryView(Resource):
         product_data = Products.query.filter_by(c_id=c_id).all()
         return marshal(product_data, product_fields),  200
   
-brand_fields = {
-    'b_name' : fields.String,
-    'b_description': fields.String
-}
-
-class BrandCRUD(Resource):
-    table_name = Brands.__tablename__ 
-
-    def __init__(self):    
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument('b_name', type=str.lower)
-        self.parser.add_argument('b_description', type=str.lower)
-    
-    def get(self, b_id):
-        brand_data = Brands.query.get(b_id)
-        print(brand_data)
-        return marshal(brand_data,brand_fields),  200
-    
-    @roles_required('store_manager')
-    @login_required
-    def post(self):
-        args = self.parser.parse_args()
-        try:
-            b1 = Brands(**args)
-            db.session.add(b1)
-            db.session.commit()
-        except:
-            return {'message': 'Creation Failed! Some Error Occured.'}, 500
-        b = Brands.query.order_by(Brands.b_id.desc()).first()
-        log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name,
-                   action_on=b.b_id, date=datetime.now())
-        db.session.add(log)
-        db.session.add(log)
-        db.session.commit()
-        return {'message':'New Brand Created'}, 200
-
-    @roles_required('store_manager')
-    @login_required
-    def put(self, b_id):
-        args = self.parser.parse_args()
-        b1 = Brands.query.get(b_id)
-        for col in Brands.__table__.columns:
-            if col.name in args:
-                setattr(b1,col.name,args[col.name])
-        log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
-                   action_on=b_id, date=datetime.now())
-        db.session.add(log)
-        db.session.commit()
-        return 200
-    
-    @roles_required('store_manager')
-    @login_required
-    def delete(self, b_id):
-        b1 = Brands.query.get(b_id)
-        if b1.products != []:
-            return {'message': f'Products under Brand (b_id:{b_id}) exists. CANNOT be deleted!'}
-        db.session.delete(b1)
-        log = Logs(user_id=current_user.id, action='DELETE', table_name=self.table_name,
-                   action_on=b_id, date=datetime.now())
-        db.session.add(log)
-        db.session.commit()
-        return {'message':f'Brand (b_id:{b_id}) deletion confirmed.'}, 200
-
 category_fields = {
     'c_name': fields.String,
     'product_count': fields.Integer,

@@ -20,7 +20,7 @@ class Config():
 class LocalDevelopmentConfig(Config):
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
     UPLOAD_FOLDER=os.path.join(basedir,'upload/')
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "grocery-store-v5o2.sqlite3")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "grocery-store-v6.sqlite3")
     DEBUG = True
     SECRET_KEY =  "@@secretkey@@"
     SECURITY_PASSWORD_HASH = "bcrypt"    

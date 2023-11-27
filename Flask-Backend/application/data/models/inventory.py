@@ -1,14 +1,12 @@
 from ..database import db 
 
 '''
-This is inventory.py file from MODELS. This include Category, Products, Brands
+This is inventory.py file from MODELS. This include Category, Products
 and Review models. The Category model defines sections for products to be 
-assigned. Also the Brands model define the seller/companies for any product. 
-Lastly, the Review model is the customer review on a product.
+assigned. Lastly, the Review model is the customer review on a product.
 
 ===============================================================================
 Relationships:
-- Brands and Products have one-to-many relationship.
 - Category and Products have many-to-many relationship.
 - Products and Review have one-to-many relationship.
 '''
@@ -23,19 +21,13 @@ class Category(db.Model):
     o_id = db.Column(db.Integer, db.ForeignKey('category_offers.o_id'))
     products = db.relationship('Products', backref='categories', cascade='all, delete, delete-orphan')
 
-class Brands(db.Model):
-    __tablename__ = 'brands'
-    b_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    b_name = db.Column(db.String, nullable=False)
-    b_description = db.Column(db.String)
-    products = db.relationship('Products', backref='brand')
-
 class Products(db.Model):
     __tablename__ = 'products'
     p_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     p_name = db.Column(db.String, nullable=False)
     p_description = db.Column(db.String)
     p_qty = db.Column(db.Float, nullable=False)
+    brand = db.Column(db.String, nullable=False)
     unit = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Integer, nullable=False)
     stock = db.Column(db.Integer, nullable=False)
@@ -44,7 +36,6 @@ class Products(db.Model):
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     expieryDate = db.Column(db.Date, nullable=False)
     c_id = db.Column(db.Integer, db.ForeignKey('category.c_id')) #category
-    b_id = db.Column(db.Integer, db.ForeignKey('brands.b_id')) #brand
     reviews = db.relationship('Review', lazy=True, cascade='all, delete, delete-orphan')
 
 class Review(db.Model):
