@@ -1,4 +1,3 @@
-
 <template>
   <CategoryList @showProducts="listenShow"/>
   <ProductList v-if="c_id!==null" :c_id="c_id"  />
