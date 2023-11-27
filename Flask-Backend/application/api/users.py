@@ -12,6 +12,7 @@ from flask_security import auth_required, roles_required
 # api = Api(prefix="/api")
 
 login_fields = {
+		'id': fields.Integer,
     'message': fields.String,
     'role': fields.String,
     'token': fields.String
@@ -33,10 +34,11 @@ class Login(Resource):
                 return {'message':'Your Registration has been denied.'}, 401
             if u.is_authenticate(args['password']):
                 login_user(u)
-                login_data = {'message':'Login Successful', 
+                login_data = [{'id':u.id,
+                							'message':'Login Successful', 
                               'role':u.roles[0].name,
                               'token':u.fs_uniquifier
-                            }
+                            }]
                 return marshal(login_data, login_fields), 200
             return {'message':'Invalid Password'}, 401
         return {'message':'Email not registered'}, 401

@@ -35,7 +35,7 @@ export default {
             try{
                 const res = await fetch('http://10.0.2.15:8000/api/category');
                 if (!res.ok) {
-                    throw Error("HTTP Error in CategoryList: "+ res.message+" "+ res.status);
+                    throw Error("HTTP Error in CategoryList: "+ res.status);
                 }
                 const data = await res.json();
                 this.categories = data;

@@ -3,21 +3,22 @@
     <div class="container d-flex justify-content-center">
         <div class="col-md-3"></div>
         <div class="col-md-6">
-            <form class="h-100">
+            <form class="h-100" @submit.prevent="loginUser">
                 <legend>Login</legend>
                 <div class="row mb-3">
-                    <label for="email" class="col-sm-3 col-form-label">Email</label>
+                    <label for="email" class="col-sm-3 col-form-label" >Email</label>
                     <div class="col-sm-9">
-                        <input type="email" class="form-control" id="email">
+                        <input type="email" class="form-control" id="email" v-model="email" />
                     </div>
                 </div>
                 <div class="row mb-3">
                     <label for="password" class="col-sm-3 col-form-label">Password</label>
                     <div class="col-sm-9">
-                        <input type="password" class="form-control" id="password">
+                        <input type="password" class="form-control" id="password" v-model="password" />
                     </div>
                 </div>
-                <button type="submit" class="btn btn-success ">Login</button>
+                <button type="submit" class="btn btn-success" @click="loginUser">Login</button><hr>
+                <p :class="this.msg_type" >{{ this.message }}</p>
             </form>
         </div>
         <div class="col-md-3"></div>
@@ -26,7 +27,43 @@
 
 <script>
 export default {
-    name: 'Login'
+    name: 'Login',
+    data(){
+        return {
+            email: '',
+            password: '',
+            message: '',
+            msg_type: 'text-success'
+        }
+    },
+    methods: {
+        async loginUser(){
+            try{
+                const res = await fetch('http://10.0.2.15:8000/api/login', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type':'application/json'
+                    },
+                    body: JSON.stringify({
+                        email:this.email,
+                        password:this.password
+                    })
+                })
+                const data = await res.json()
+                if (res.status==401) {
+                    this.message=data.message;
+                    this.msg_type='text-danger';
+                } else if(!res.ok){
+                    throw Error('HTTP Error at Login:'+res.status);
+                } else {
+                    // console.log(JSON.stringify(data))
+                    localStorage.setItem('user', JSON.stringify(data));
+                    this.message=data[0].message;
+                    this.msg_type='text-success';
+                }  
+            }catch(error){console.log(error.message)} ;
+        }
+    }
 }
 </script>
 
@@ -39,5 +76,5 @@ export default {
         font-weight: 600;
         font-size: x-large;
         text-align: center;
-    }   
+    }
 </style>
