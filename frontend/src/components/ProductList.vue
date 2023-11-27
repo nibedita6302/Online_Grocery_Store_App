@@ -1,3 +1,4 @@
+
 <template>
     <div id='top' class="row row-cols-1 row-cols-md-2 g-4">
         <div v-for="p in products" class="col-3">
