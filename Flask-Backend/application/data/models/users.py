@@ -48,7 +48,7 @@ class Users(db.Model, UserMixin):
         # 1->Denied, 0->Waiting, 1->Approved
         db.CheckConstraint('active IN (-1,0,1)', name='user_active'),
     )
-    def is_authenticate(self, password):
+    def match_password(self, password):
         return  check_password(password, self.password)
 
 class Address(db.Model):

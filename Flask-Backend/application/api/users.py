@@ -32,8 +32,9 @@ class Login(Resource):
                 return {'message':'Your Registration is not yet Approved.'}, 401
             elif u.active==-1 and u.roles[0].name=='store_manager':
                 return {'message':'Your Registration has been denied.'}, 401
-            if u.is_authenticate(args['password']):
+            if u.match_password(args['password']):
                 login_user(u)
+                print(current_user, 'from login')
                 login_data = [{'id':u.id,
                 							'message':'Login Successful', 
                               'role':u.roles[0].name,
@@ -44,10 +45,9 @@ class Login(Resource):
         return {'message':'Email not registered'}, 401
     
 class Logout(Resource):
-    @login_required
-    def post(self):
+    def get(self):
         logout_user()
-        return 200
+        return {'message':'Logged Out!'}, 200
 
 class CustomerRegister(Resource):
     def __init__(self):
