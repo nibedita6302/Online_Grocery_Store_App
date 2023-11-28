@@ -39,7 +39,7 @@ export default{
         },
         refresh(){
             const router = this.$router
-            router.push('/')
+            router.push('/login')
         }
     }
 }
