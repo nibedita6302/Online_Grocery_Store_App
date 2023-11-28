@@ -113,12 +113,13 @@ api.add_resource(AddressCRUD, '/customer/<int:user_id>/address')
 from application.api.users import ManagerApproval
 api.add_resource(ManagerApproval,'/admin/store-manager-approvals','/admin/store-manager-approvals/<int:id>')
 
-from application.api.inventory import ProductCRUD, ProductCategoryView, CategoryCRUD, ReviewCRUD
+from application.api.inventory import ProductCRUD, ProductCategoryView, CategoryCRUD, CategoryGet, ReviewCRUD
 api.add_resource(ProductCRUD, '/product/<int:p_id>', '/product/<int:p_id>/edit',
                   '/product/create', '/product/<int:p_id>/delete')
 api.add_resource(ProductCategoryView, '/product/category/<int:c_id>',)
 api.add_resource(CategoryCRUD, '/category', '/category/<int:c_id>/edit', '/category/create', 
                  '/category/<int:c_id>/delete')
+api.add_resource(CategoryGet, '/category/<int:c_id>')
 api.add_resource(ReviewCRUD, '/product/<int:p_id>/review', '/customer/product/<int:p_id>/review')
 
 from application.api.confirmation import RequestConfirmation, ReturnConfirmation

@@ -105,6 +105,11 @@ category_fields = {
     'o_id': fields.Integer
 }
 
+class CategoryGet(Resource):
+    def get(self, c_id):
+        category_data = Category.query.get(c_id)
+        return marshal(category_data,category_fields),  200
+
 class CategoryCRUD(Resource):
     table_name = Category.__tablename__ 
 
