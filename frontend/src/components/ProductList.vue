@@ -38,6 +38,11 @@ export default {
         get_url(img){
             return require('@/assets/upload/'+img); 
         },
+        listenSearch(products) {
+            // console.log('here')
+            this.products = products;
+            this.emitter.off("searchProducts", this.listenSearch);
+        },
         addToCart(){
 
         }
@@ -57,6 +62,9 @@ export default {
             }
             return null;
         }
+    },
+    mounted() {
+        this.emitter.on("searchProducts", this.listenSearch);
     }
 }
 </script>

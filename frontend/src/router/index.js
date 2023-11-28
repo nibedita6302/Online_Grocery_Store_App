@@ -10,6 +10,10 @@ const routes = [
   {
     path: '/login',
     component: LoginView
+  },
+  {
+    path: '/logout',
+    component: LoginView
   }
 ]
 

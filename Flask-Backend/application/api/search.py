@@ -16,8 +16,7 @@ product_fields = {
     'p_image': fields.String,
     'is_deleted': fields.Float,
     'expieryDate' : fields.String,
-    'c_id' : fields.Integer, #needed??
-    'b_id' :fields.Integer
+    'c_id' : fields.Integer #needed??
 }
 
 class Search(Resource):
@@ -25,11 +24,12 @@ class Search(Resource):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('string', type=str.lower)
     
-    def get(self):
+    def post(self):
         args = self.parser.parse_args()
         product_data = []
         product_data.extend(search_category(args['string']))
         product_data.extend(search_brand(args['string']))
         product_data.extend(search_product(args['string']))
+        product_data = list(set(product_data))
         return marshal(product_data, product_fields), 200
 
