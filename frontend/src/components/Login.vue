@@ -25,7 +25,7 @@
 </template>
 
 <script>
-export default {
+export default { 
     name: 'Login',
     data(){
         return {
@@ -55,10 +55,10 @@ export default {
                 } else if(!res.ok){
                     throw Error('HTTP Error at Login:'+res.status);
                 } else {
-                    // console.log(JSON.stringify(data))
                     localStorage.setItem('user', JSON.stringify(data));
-                    this.message=data[0].message;
+                    this.message=data.message;
                     this.msg_type='text-success';
+                    this.emitter.emit('loginUser');
                 }  
             }catch(error){console.log(error.message)} ;
         }

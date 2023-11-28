@@ -16,11 +16,11 @@
             <router-link to='#' active-class="active" class="nav-link">Offers</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='customer'||this.user===null" 
+            <router-link to='#' v-if="this.user.role=='customer'" 
             active-class="active" class="nav-link">My Cart</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='customer'||this.user===null" 
+            <router-link to='#' v-if="this.user.role=='customer'" 
             active-class="active" class="nav-link">Profile</router-link>
           </li>
           <li class="nav-item">
@@ -36,7 +36,7 @@
             <router-link to='/login' active-class="active" class="nav-link">Login</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='/logout' active-class="active" class="nav-link">Logout</router-link>
+            <LogoutAlert />
           </li>
         </ul>
       </div>
@@ -45,22 +45,30 @@
 </template>
 
 <script>
+import LogoutAlert from './LogoutAlert.vue'
+
 export default {
   name: 'Navbar',
   data(){
     return {
-      user: null
+      user: {role:null}
     }
+  },
+  components:{
+    LogoutAlert
   },
   methods:{
     refresh(){
-      this.$router.go(0)
+      const router = this.$router
+      router.push('/')
+    },
+    get_login(){
+      this.user=JSON.parse(localStorage.getItem('user'))
+      this.emitter.off('loginUser',get_login)
     }
   },
-  created(){
-    const user=localStorage.getItem('user');
-    // console.log(user)
-    this.user = JSON.parse(user)[0];
+  mounted() {
+    this.emitter.on('loginUser',this.get_login)
   }
 }
 </script>

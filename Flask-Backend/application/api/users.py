@@ -35,11 +35,11 @@ class Login(Resource):
             if u.match_password(args['password']):
                 login_user(u)
                 print(current_user, 'from login')
-                login_data = [{'id':u.id,
+                login_data = {'id':u.id,
                 							'message':'Login Successful', 
                               'role':u.roles[0].name,
                               'token':u.fs_uniquifier
-                            }]
+                            }
                 return marshal(login_data, login_fields), 200
             return {'message':'Invalid Password'}, 401
         return {'message':'Email not registered'}, 401
