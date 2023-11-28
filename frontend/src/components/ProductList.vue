@@ -1,6 +1,10 @@
 
 <template>
     <div id='top' class="row row-cols-1 row-cols-md-3 g-2">
+        <div v-if="!this.products.length && !c_id">
+            <h3>No Products Found!</h3>
+            <em>Please check for any spelling mistakes...</em>
+        </div>
         <div v-for="p in products" class="col-3">
             <div class="card h-100">
                 <img :src="get_url(p.p_image)" class="card-img-top" :alt="p.p_image">
@@ -13,7 +17,7 @@
                         Only few left!
                     </p>
                     <p v-else class="card-text" style="color:red;">Out of Stock</p>
-                    <form>
+                    <form v-if="user.r">
                         <input type="number" value="1" min="1" :max="p.stock_remaining" required/>
                         <button class="btn btn-warning" @click="addToCart" :disabled="p.stock_remaining==0">
                             Add to Cart
@@ -31,7 +35,8 @@ export default {
     name: 'ProductList',
     data() {
         return {
-            products: []
+            products: [],
+            user: JSON.parse(localStorage.getItem('user'))
         }
     },
     methods:{
@@ -39,9 +44,7 @@ export default {
             return require('@/assets/upload/'+img); 
         },
         listenSearch(products) {
-            // console.log('here')
             this.products = products;
-            this.emitter.off("searchProducts", this.listenSearch);
         },
         addToCart(){
 
@@ -65,6 +68,9 @@ export default {
     },
     mounted() {
         this.emitter.on("searchProducts", this.listenSearch);
+    },
+    beforeUnmount(){
+        this.emitter.off("searchProducts", this.listenSearch);
     }
 }
 </script>
