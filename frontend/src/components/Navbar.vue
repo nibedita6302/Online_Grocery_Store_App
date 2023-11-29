@@ -51,7 +51,7 @@ export default {
   name: 'Navbar',
   data(){
     return {
-      user: {role:null}
+      user: JSON.parse(localStorage.getItem('user'))
     }
   },
   components:{
