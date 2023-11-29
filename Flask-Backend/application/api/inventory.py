@@ -1,10 +1,13 @@
+import os
 from datetime import datetime
 from application.data.models.inventory import *
 from application.data.models.users import Users
 from application.data.models.users import Logs
+from application.utils import parseProductFromData
 from flask_restful import Resource, fields, marshal, reqparse
 from application.data.database import db
-from flask import abort
+from flask import abort, request
+from flask import current_app as app
 from flask_login import login_required, current_user
 from flask_security import auth_required, roles_required, roles_accepted
 
@@ -46,19 +49,34 @@ class ProductCRUD(Resource):
     @roles_required('store_manager')
     @login_required
     def post(self):
+        id=1
+        image = None
         try:
-            args = self.parser.parse_args()
-            args['expieryDate'] = datetime.strptime(args['expieryDate'],f'%Y-%m-%d')
-            p1 = Products(**args, stock_remaining=args['stock'])
+            formData = request.form.to_dict()
+            formData = parseProductFromData(formData) # validating form
+            print(formData)
+            if not formData['p_name'].isalnum():
+                return {'message':'Category name must be of only one word'}, 400
+            p = Products.query.order_by(Products.p_id.desc()).first()
+            p1 = Products(**formData, stock_remaining=formData['stock'])
+            if 'p_image' in request.files:
+                image = request.files['p_image']
+                if image.filename != "":
+                    extension = '.'+image.filename.split('.')[-1]
+                    if p is not None: #check if this one is the first category
+                        id=p.p_id+1
+                    img_path = formData['p_name'].lower()+'_'+str(id)+extension
+                    print(img_path)
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    p1.p_image = img_path
+            # increment category product_count
             c1 = Category.query.get(p1.c_id)
             c1.product_count+=1
             db.session.add(p1)
-            db.session.commit()
         except:
             return {'message': 'Creation Failed! Some Error Occured.'}, 500
-        p = Products.query.order_by(Products.p_id.desc()).first()
         log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name, 
-                   action_on=p.p_id, date=datetime.now())
+                   action_on=id, date=datetime.now())
         db.session.add(log)
         db.session.commit()
         return {'message':'New Product Created'}, 200
@@ -66,17 +84,32 @@ class ProductCRUD(Resource):
     @roles_required('store_manager')
     @login_required
     def put(self, p_id):
-        args = self.parser.parse_args()
-        p1 = Products.query.get(p_id)
-        for col in Products.__table__.columns:
-            if col.name in args:
-                if col.name == 'expieryDate':
-                    args['expieryDate'] = datetime.strptime(args['expieryDate'],f'%Y-%m-%d')
-                elif col.name == 'stock':
-                    p1.stock_remaining = args['stock']
-                setattr(p1,col.name,args[col.name])
+        try:
+            p1 = Products.query.get(p_id)
+            formData = request.form.to_dict()
+            formData = parseProductFromData(formData) # validating form
+            if 'p_name' in formData and (not formData['p_name'].isalnum()):
+                return {'message':'Category name must be of only one word'}, 400
+            for col in Products.__table__.columns:
+                if col.name in formData:
+                    if col.name == 'stock':
+                        p1.stock_remaining = formData['stock']
+                    setattr(p1,col.name,formData[col.name])
+            if 'p_image' in request.files:
+                image = request.files['p_image']
+                if image.filename != "":
+                    old_image = os.path.join(app.config['UPLOAD_FOLDER'],p1.p_image)
+                    extension = '.'+image.filename.split('.')[-1]
+                    img_path = formData['p_name'].lower()+'_'+str(p1.p_id)+extension
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    p1.p_image = img_path
+                    if os.path.exists(old_image):
+                        os.remove(old_image)
+        except Exception as e:
+            print(e)
+            return {'message': 'Creation Failed! Some Error Occured.'}, 500
         log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
-                   action_on=p_id, date=datetime.now())
+                   action_on=p1.p_id, date=datetime.now(), is_admin=True)
         db.session.add(log)
         db.session.commit()
         return 200
@@ -127,16 +160,30 @@ class CategoryCRUD(Resource):
     @roles_required('admin')
     @login_required
     def post(self):
-        args = self.parser.parse_args()
+        id=1
+        image = None
         try:
-            c1 = Category(**args)
+            formData = request.form.to_dict()
+            print(formData)
+            if not formData['c_name'].isalnum():
+                return {'message':'Category name must be of only one word'}, 400
+            c = Category.query.order_by(Category.c_id.desc()).first()
+            c1 = Category(**formData)
+            if 'c_image' in request.files:
+                image = request.files['c_image']
+                if image.filename != "":
+                    extension = '.'+image.filename.split('.')[-1]
+                    if c is not None: #check if this one is the first category
+                        id=c.c_id+1
+                    img_path = formData['c_name'].lower()+'_'+str(id)+extension
+                    print(img_path)
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    c1.c_image = img_path
             db.session.add(c1)
-            db.session.commit()
         except:
             return {'message': 'Creation Failed! Some Error Occured.'}, 500
-        c = Category.query.order_by(Category.c_id.desc()).first()
         log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name,
-                   action_on=c.c_id, date=datetime.now(), is_admin=True)
+                   action_on=id, date=datetime.now(), is_admin=True)
         db.session.add(log)
         db.session.commit()
         return {'message':'New Category Created'}, 200
@@ -144,10 +191,25 @@ class CategoryCRUD(Resource):
     @roles_required('admin')
     @login_required
     def put(self, c_id):
-        args = self.parser.parse_args()
+        image = None
         c1 = Category.query.get(c_id)
-        c1.c_name = args['c_name']
-        c1.c_image = args['c_image']
+        try:
+            formData = request.form.to_dict()
+            c1.c_name = formData['c_name']
+            if not formData['c_name'].isalnum():
+                return {'message':'Category name must be of only one word'}, 400
+            if 'c_image' in request.files:
+                image = request.files['c_image']
+                if image.filename != "":
+                    old_image = os.path.join(app.config['UPLOAD_FOLDER'],c1.c_image)
+                    extension = '.'+image.filename.split('.')[-1]
+                    img_path = formData['c_name'].lower()+'_'+str(c1.c_id)+extension
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    c1.c_image = img_path
+                    if os.path.exists(old_image):
+                        os.remove(old_image)
+        except:
+            return {'message': 'Creation Failed! Some Error Occured.'}, 500
         log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
                    action_on=c_id, date=datetime.now(), is_admin=True)
         db.session.add(log)

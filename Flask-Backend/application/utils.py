@@ -1,5 +1,6 @@
 from bcrypt import hashpw, gensalt, checkpw
 from .data.models.inventory import *
+from datetime import datetime
 
 def hash_password(plain_pw):
     salt = gensalt()
@@ -39,3 +40,13 @@ def search_product(string):
         p = Products.query.filter(Products.p_name.like(item)).all()
         product_list.extend(p)
     return product_list
+
+def parseProductFromData(form):
+    for i in form:
+        if i in ['p_qty','price']:
+            form[i]=float(form[i])
+        elif i in ['c_id','stock']:
+            form[i]=int(form[i])
+        elif i=='expieryDate':
+            form[i] = datetime.strptime(form['expieryDate'],f'%Y-%m-%d')
+    return form
