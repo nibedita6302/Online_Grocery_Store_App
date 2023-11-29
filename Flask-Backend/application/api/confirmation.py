@@ -26,8 +26,8 @@ class RequestConfirmation(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('action', type=str, choices=['POST','PUT','DELETE'], help='Invalid Action')
-        self.parser.add_argument('update', type=str.lower)
-        self.parser.add_argument('url', type=str.lower)
+        self.parser.add_argument('update', type=str)
+        self.parser.add_argument('url', type=str)
 
     @roles_accepted('store_manager','admin')
     @login_required
@@ -56,7 +56,7 @@ class ReturnConfirmation(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('status', type=int, choices=[-1,1], help='Invalid Status')
-        self.parser.add_argument('comment', type=str.lower)
+        self.parser.add_argument('comment', type=str)
 
     @roles_required('admin')
     @login_required

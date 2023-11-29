@@ -134,7 +134,7 @@ class AddressCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('a_id', type=int)
-        self.parser.add_argument('address', type=str.lower)
+        self.parser.add_argument('address', type=str)
         self.parser.add_argument('pincode', type=str, help='Enter only 7 digits.')
 
     @roles_required('customer')

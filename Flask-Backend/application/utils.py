@@ -15,7 +15,7 @@ def search_category(string):
     for s in string.split():
         item = '%'+s+'%'
         print(item)
-        category = Category.query.filter(Category.c_name.like(item)).all()
+        category = Category.query.filter(Category.c_name.ilike(item)).all()
         print(category)
         for c in category:
             p = c.products
@@ -28,7 +28,7 @@ def search_brand(string):
     product_list = []
     for s in string.split():
         item = '%'+s+'%'
-        p = Products.query.filter(Products.brand.like(item)).all()
+        p = Products.query.filter(Products.brand.ilike(item)).all()
         product_list.extend(p)
     return product_list
 
@@ -37,7 +37,7 @@ def search_product(string):
     product_list = []
     for s in string.split():
         item = '%'+s+'%'
-        p = Products.query.filter(Products.p_name.like(item)).all()
+        p = Products.query.filter(Products.p_name.ilike(item)).all()
         product_list.extend(p)
     return product_list
 

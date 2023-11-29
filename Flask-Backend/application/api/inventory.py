@@ -31,15 +31,15 @@ class ProductCRUD(Resource):
     
     def __init__(self):      
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('p_name', type=str.lower)
-        self.parser.add_argument('p_description', type=str.lower)
-        self.parser.add_argument('brand', type=str.lower)
+        self.parser.add_argument('p_name', type=str)
+        self.parser.add_argument('p_description', type=str)
+        self.parser.add_argument('brand', type=str)
         self.parser.add_argument('p_qty', type=int)
-        self.parser.add_argument('unit', type=str.lower)
+        self.parser.add_argument('unit', type=str)
         self.parser.add_argument('price', type=float)
         self.parser.add_argument('stock', type=int)
-        self.parser.add_argument('p_image', type=str.lower)
-        self.parser.add_argument('expieryDate', type=str.lower)
+        self.parser.add_argument('p_image', type=str)
+        self.parser.add_argument('expieryDate', type=str)
         self.parser.add_argument('c_id', type=int)
     
     def get(self, p_id):
@@ -148,10 +148,10 @@ class CategoryCRUD(Resource):
 
     def __init__(self):        
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('c_name', type=str.lower)
+        self.parser.add_argument('c_name', type=str)
         self.parser.add_argument('product_count', type=int)
         self.parser.add_argument('o_id', type=int)
-        self.parser.add_argument('c_image', type=str.lower)
+        self.parser.add_argument('c_image', type=str)
     
     def get(self):
         category_data = Category.query.all()
@@ -240,7 +240,7 @@ review_fields = {
 class ReviewCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('review', type=str.lower)
+        self.parser.add_argument('review', type=str)
         self.parser.add_argument('rating', type=int)
     
     def get(self, p_id):

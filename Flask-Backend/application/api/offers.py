@@ -19,8 +19,8 @@ offer_fields = {
 class CustomerOfferCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('o_name', type=str.lower)
-        self.parser.add_argument('description', type=str.lower)
+        self.parser.add_argument('o_name', type=str)
+        self.parser.add_argument('description', type=str)
         self.parser.add_argument('discount', type=int)
         self.parser.add_argument('use_count', type=int)
         self.parser.add_argument('price', type=float)
@@ -80,8 +80,8 @@ category_fields = {
 class CategoryOfferCRUD(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('o_name', type=str.lower)
-        self.parser.add_argument('description', type=str.lower)
+        self.parser.add_argument('o_name', type=str)
+        self.parser.add_argument('description', type=str)
         self.parser.add_argument('discount', type=int)
     
     def get(self):
