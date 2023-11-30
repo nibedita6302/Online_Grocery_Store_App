@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import {emitter} from '../main.js'
+
 export default{
     name: 'LogoutAlert',
     data(){
@@ -26,7 +28,10 @@ export default{
     },
     methods:{
         async logoutUser(){
-            fetch('http://10.0.2.15:8000/api/logout')
+            fetch('http://10.0.2.15:8000/api/logout', {
+                method: 'GET',
+                credentials: 'include'
+            })
             .then((res)=>{
                 if(!res.ok) {throw Error('HTTP error at Logout:'+res.status);}
                 return res.json()
@@ -34,7 +39,8 @@ export default{
                 this.title = data.message;
                 localStorage.setItem('user',JSON.stringify({roll:null}));
                 this.refresh();
-                this.emitter.emit('loginUser');
+                emitter.emit('isLoggedIn', false);
+                /* console.log('emit successful1'); */
             }).catch((error)=>console.log(error.message))
         },
         refresh(){

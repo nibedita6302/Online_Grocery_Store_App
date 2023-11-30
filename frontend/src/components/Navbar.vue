@@ -46,6 +46,7 @@
 
 <script>
 import LogoutAlert from './LogoutAlert.vue'
+import {emitter} from '../main.js'
 
 export default {
   name: 'Navbar',
@@ -62,13 +63,13 @@ export default {
       const router = this.$router
       router.push('/')
     },
-    get_login(){
+    get_login(val){
       this.user=JSON.parse(localStorage.getItem('user'))
-      this.emitter.off('loginUser',get_login)
+      emitter.off('isLoggedIn',this.get_login)
     }
   },
   mounted() {
-    this.emitter.on('loginUser',this.get_login)
+    emitter.on('isLoggedIn',this.get_login)
   }
 }
 </script>

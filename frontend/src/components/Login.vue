@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import {emitter} from '../main.js'
+
 export default { 
     name: 'Login',
     data(){
@@ -46,7 +48,8 @@ export default {
                     body: JSON.stringify({
                         email:this.email,
                         password:this.password
-                    })
+                    }),
+                    credentials: 'include'
                 })
                 const data = await res.json()
                 if (res.status==401) {
@@ -58,7 +61,8 @@ export default {
                     localStorage.setItem('user', JSON.stringify(data));
                     this.message=data.message;
                     this.msg_type='text-success';
-                    this.emitter.emit('loginUser');
+                    emitter.emit('isLoggedIn', true);
+                   /*  console.log('emit successful2'); */
                 }  
             }catch(error){console.log(error.message)} ;
         }
