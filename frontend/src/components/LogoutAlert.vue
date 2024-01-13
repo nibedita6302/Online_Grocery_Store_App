@@ -21,26 +21,29 @@ import {emitter} from '../main.js'
 
 export default{
     name: 'LogoutAlert',
-    data(){
+    data(){  
         return {
             title: ''
         }
     },
     methods:{
         async logoutUser(){
-            fetch('http://10.0.2.15:8000/api/logout', {
+            fetch('http://10.0.2.15:8000/api/logout?auth_token='+JSON.parse(localStorage.getItem("token")), {
                 method: 'GET',
-                credentials: 'include'
+                credentials: 'include',
+                /* headers: {
+                    'Authorization-Token': `Bearer ${JSON.parse(localStorage.getItem('token'))}`
+                } */
             })
             .then((res)=>{
                 if(!res.ok) {throw Error('HTTP error at Logout:'+res.status);}
+                console.log(res)
                 return res.json()
             }).then((data)=>{
                 this.title = data.message;
                 localStorage.setItem('user',JSON.stringify({roll:null}));
                 this.refresh();
                 emitter.emit('isLoggedIn', false);
-                /* console.log('emit successful1'); */
             }).catch((error)=>console.log(error.message))
         },
         refresh(){

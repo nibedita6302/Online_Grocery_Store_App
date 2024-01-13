@@ -49,7 +49,7 @@ export default {
                         email:this.email,
                         password:this.password
                     }),
-                    credentials: 'include'
+                    credentials: 'same-origin' 
                 })
                 const data = await res.json()
                 if (res.status==401) {
@@ -58,11 +58,12 @@ export default {
                 } else if(!res.ok){
                     throw Error('HTTP Error at Login:'+res.status);
                 } else {
-                    localStorage.setItem('user', JSON.stringify(data));
+                    localStorage.setItem('id', JSON.stringify(data.id));
+                    localStorage.setItem('role', JSON.stringify(data.role));
+                    localStorage.setItem('token', JSON.stringify(data.token));
                     this.message=data.message;
                     this.msg_type='text-success';
                     emitter.emit('isLoggedIn', true);
-                   /*  console.log('emit successful2'); */
                 }  
             }catch(error){console.log(error.message)} ;
         }

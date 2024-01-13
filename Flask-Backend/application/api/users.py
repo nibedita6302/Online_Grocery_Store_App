@@ -7,12 +7,12 @@ from application.data.database import db
 from application.sec import datastore
 from flask import abort
 from flask_login import login_user, logout_user, login_required, current_user
-from flask_security import auth_required, roles_required
+from flask_security import auth_required, roles_required, auth_token_required
 
 # api = Api(prefix="/api")
 
 login_fields = {
-		'id': fields.Integer,
+	'id': fields.Integer,
     'message': fields.String,
     'role': fields.String,
     'token': fields.String
@@ -34,18 +34,22 @@ class Login(Resource):
                 return {'message':'Your Registration has been denied.'}, 401
             if u.match_password(args['password']):
                 login_user(u)
-                print(current_user, 'from login')
+                print(current_user, 'from login - authentication', current_user.is_authenticated)
+                # print(current_user.get_auth_token(), current_user.get_auth_token()==current_user.fs_uniquifier)
                 login_data = {'id':u.id,
-                							'message':'Login Successful', 
+                              'message':'Login Successful', 
                               'role':u.roles[0].name,
-                              'token':u.fs_uniquifier
+                              'token': current_user.get_auth_token()
                             }
                 return marshal(login_data, login_fields), 200
             return {'message':'Invalid Password'}, 401
         return {'message':'Email not registered'}, 401
     
 class Logout(Resource):
+    @auth_required('token')
+    @login_required
     def get(self):
+        print(current_user, 'from logout - authentication', current_user.is_authenticated)
         logout_user()
         return {'message':'Logged Out!'}, 200
 

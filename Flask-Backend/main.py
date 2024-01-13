@@ -54,7 +54,7 @@ def create_app():
 
     api = Api(app, prefix='/api')
     app.app_context().push()   
-    CORS(app)
+    CORS(app, supports_credentials=True)
     
     # Create celery   
     #celery = workers.celery
