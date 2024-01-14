@@ -18,6 +18,7 @@
 
 <script>
 import {emitter} from '../main.js'
+import {mapGetters, mapMutations} from 'vuex'
 
 export default{
     name: 'LogoutAlert',
@@ -27,8 +28,9 @@ export default{
         }
     },
     methods:{
+        ...mapMutations('auth', ['REMOVE_LOGOUT_USER_DATA']),
         async logoutUser(){
-            fetch('http://10.0.2.15:8000/api/logout?auth_token='+JSON.parse(localStorage.getItem("token")), {
+            fetch('http://10.0.2.15:8000/api/logout?auth_token='+this.GET_USER_TOKEN, { 
                 method: 'GET',
                 credentials: 'include'
             })
@@ -38,9 +40,8 @@ export default{
                 return res.json()
             }).then((data)=>{
                 this.title = data.message;
-                localStorage.removeItem('id');
-                localStorage.removeItem('role');
-                localStorage.removeItem('token');
+                localStorage.removeItem('savedAuthData');
+                this.REMOVE_LOGOUT_USER_DATA()
                 this.refresh();
                 emitter.emit('isLoggedIn', false);
             }).catch((error)=>console.log(error.message))
@@ -49,6 +50,9 @@ export default{
             const router = this.$router
             router.push('/login')
         }
+    },
+    computed: {
+        ...mapGetters('auth', ['GET_USER_TOKEN'])
     }
 }
 </script>

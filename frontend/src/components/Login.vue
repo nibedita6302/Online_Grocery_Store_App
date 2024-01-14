@@ -26,6 +26,7 @@
 
 <script>
 import {emitter} from '../main.js'
+import {mapMutations} from 'vuex'
 
 export default { 
     name: 'Login',
@@ -38,6 +39,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations('auth',['SET_LOGIN_USER_DATA']),
         async loginUser(){
             try{
                 const res = await fetch('http://10.0.2.15:8000/api/login', {
@@ -58,9 +60,12 @@ export default {
                 } else if(!res.ok){
                     throw Error('HTTP Error at Login:'+res.status);
                 } else {
-                    localStorage.setItem('id', JSON.stringify(data.id));
-                    localStorage.setItem('role', JSON.stringify(data.role));
-                    localStorage.setItem('token', JSON.stringify(data.token));
+                    localStorage.setItem('savedAuthData', JSON.stringify(data));
+                    this.SET_LOGIN_USER_DATA({
+                        id: data.id,
+                        role: data.role,
+                        token: data.token
+                    })
                     this.message=data.message;
                     this.msg_type='text-success';
                     emitter.emit('isLoggedIn', true);

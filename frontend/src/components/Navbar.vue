@@ -16,19 +16,19 @@
             <router-link to='#' active-class="active" class="nav-link">Offers</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.role=='customer'" 
+            <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
             active-class="active" class="nav-link">My Cart</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.role=='customer'" 
+            <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
             active-class="active" class="nav-link">Profile</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.role=='admin'||this.role=='store_manager'"
+            <router-link to='#' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
              active-class="active" class="nav-link">Approvals </router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.role=='admin'" active-class="active" class="nav-link">
+            <router-link to='#' v-if="this.GET_USER_ROLE=='admin'" active-class="active" class="nav-link">
               Logs & Reports
             </router-link>
           </li>
@@ -46,16 +46,13 @@
 
 <script>
 import LogoutAlert from './LogoutAlert.vue'
-import {emitter} from '../main.js'
+// import {emitter} from '../main.js'
+import {mapGetters} from "vuex"
 
 export default {
   name: 'Navbar',
   data(){
-    return {
-      id: null,
-      role: 'customer',
-      token: null
-    }
+    return {}
   },
   components:{
     LogoutAlert
@@ -64,16 +61,19 @@ export default {
     refresh(){
       const router = this.$router
       router.push('/')
-    },
+    }
+    /* 
     get_login(val){
       this.id=JSON.parse(localStorage.getItem('id'))
       this.role=JSON.parse(localStorage.getItem('role'))
-      this.token=JSON.parse(localStorage.getItem('token'))
       // emitter.off('isLoggedIn',this.get_login)
-    }
+    } */
+  },
+  computed:{
+    ...mapGetters('auth',['GET_USER_ROLE'])
   },
   mounted() {
-    emitter.on('isLoggedIn',this.get_login)
+    // emitter.on('isLoggedIn',this.get_login)
   }
 }
 </script>
