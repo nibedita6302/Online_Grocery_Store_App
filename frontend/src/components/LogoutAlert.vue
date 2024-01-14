@@ -30,10 +30,7 @@ export default{
         async logoutUser(){
             fetch('http://10.0.2.15:8000/api/logout?auth_token='+JSON.parse(localStorage.getItem("token")), {
                 method: 'GET',
-                credentials: 'include',
-                /* headers: {
-                    'Authorization-Token': `Bearer ${JSON.parse(localStorage.getItem('token'))}`
-                } */
+                credentials: 'include'
             })
             .then((res)=>{
                 if(!res.ok) {throw Error('HTTP error at Logout:'+res.status);}
@@ -41,7 +38,9 @@ export default{
                 return res.json()
             }).then((data)=>{
                 this.title = data.message;
-                localStorage.setItem('user',JSON.stringify({roll:null}));
+                localStorage.removeItem('id');
+                localStorage.removeItem('role');
+                localStorage.removeItem('token');
                 this.refresh();
                 emitter.emit('isLoggedIn', false);
             }).catch((error)=>console.log(error.message))

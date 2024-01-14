@@ -16,19 +16,19 @@
             <router-link to='#' active-class="active" class="nav-link">Offers</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='customer'" 
+            <router-link to='#' v-if="this.role=='customer'" 
             active-class="active" class="nav-link">My Cart</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='customer'" 
+            <router-link to='#' v-if="this.role=='customer'" 
             active-class="active" class="nav-link">Profile</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='admin'||this.user.role=='store_manager'"
+            <router-link to='#' v-if="this.role=='admin'||this.role=='store_manager'"
              active-class="active" class="nav-link">Approvals </router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.user.role=='admin'" active-class="active" class="nav-link">
+            <router-link to='#' v-if="this.role=='admin'" active-class="active" class="nav-link">
               Logs & Reports
             </router-link>
           </li>
@@ -52,7 +52,9 @@ export default {
   name: 'Navbar',
   data(){
     return {
-      user: JSON.parse(localStorage.getItem('user'))
+      id: null,
+      role: 'customer',
+      token: null
     }
   },
   components:{
@@ -64,8 +66,10 @@ export default {
       router.push('/')
     },
     get_login(val){
-      this.user=JSON.parse(localStorage.getItem('user'))
-      emitter.off('isLoggedIn',this.get_login)
+      this.id=JSON.parse(localStorage.getItem('id'))
+      this.role=JSON.parse(localStorage.getItem('role'))
+      this.token=JSON.parse(localStorage.getItem('token'))
+      // emitter.off('isLoggedIn',this.get_login)
     }
   },
   mounted() {

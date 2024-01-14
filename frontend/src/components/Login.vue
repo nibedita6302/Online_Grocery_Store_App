@@ -49,7 +49,7 @@ export default {
                         email:this.email,
                         password:this.password
                     }),
-                    credentials: 'same-origin' 
+                    credentials: 'include' 
                 })
                 const data = await res.json()
                 if (res.status==401) {
