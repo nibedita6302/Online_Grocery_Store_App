@@ -1,11 +1,13 @@
 import { createStore } from "vuex";
 import auth from "./modules/auth/index";
-import searching from "./modules/searching";
+import searching from "./modules/searching/index";
+import product_display from "./modules/product_display/index";
 
 const store = createStore({
     modules: {
         auth,
         searching,
+        product_display
     }
 })
 

@@ -15,11 +15,12 @@ export default ({
     STORE_SEARCH_PRODUCTS(state, payload){
       state.searchOutput = payload.searchOutput;
       state.showProducts = true
-      console.log(state.searchOutput, state.showProducts);
+      // console.log(state.searchOutput, state.showProducts);
     },
     TOGGLE_SEARCH_OUTPUT(state, payload){
       state.showProducts = payload.setTo;
-      console.log(state.showProducts)
+      state.searchOutput = [];
+      // console.log(state.showProducts)
     }
   },
   actions: {
