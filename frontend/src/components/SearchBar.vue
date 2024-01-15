@@ -15,33 +15,48 @@
 </template>
 
 <script>
-// import {emitter} from '../main.js'
+import {mapMutations} from 'vuex';
 
 export default {
     name: 'SearchBar',
     data(){
         return {
             search_input: '',
-            search_output: '',
-            count: 0
+            search_output: [],
+            flag: true
         }
     },
     methods:{
+        ...mapMutations('searching', ['STORE_SEARCH_PRODUCTS','TOGGLE_SEARCH_OUTPUT']),
         async search(){
+            await this.fetchSearchOutput();
+            // synch function
+            this.update_search_store();
+            this.$router.push('/show-products');
+        },
+        async fetchSearchOutput(){
             await fetch('http://10.0.2.15:8000/api/search', {
                 method: 'POST',
                 headers: {
                     'Content-Type':'application/json'
                 },
-                body: JSON.stringify({string:this.search_input})
+                body: JSON.stringify({string:this.search_input}),
+                credentials: 'include'
             }).then(res => {
                 if (!res.ok) { throw Error("HTTP Error at Search:"+res.status) }
                 return res.json() ;
             }).then((data) => {
-                this.search_output = data;
-                this.emitter.emit('searchProducts', this.search_output);
-                // console.log('search', this.search_output);
-            }).catch( (error) => console.log(error) ) ;
+                this.search_output = data; 
+                // console.log('here', this.search)
+                this.update_search_store();
+                // this.emitter.emit('searchProducts', this.search_output);
+            }).catch( (error) => console.log(error) ) ; 
+        },
+        update_search_store(){
+            // console.log('out',this.search_output)
+            this.STORE_SEARCH_PRODUCTS({
+                searchOutput: this.search_output 
+            });
         }
     }
 }   
