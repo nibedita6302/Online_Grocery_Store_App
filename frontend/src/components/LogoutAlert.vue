@@ -30,7 +30,7 @@ export default{
     methods:{
         ...mapMutations('auth', ['REMOVE_LOGOUT_USER_DATA']),
         async logoutUser(){
-            fetch('http://10.0.2.15:8000/api/logout?auth_token='+this.GET_USER_TOKEN, { 
+            fetch('http://10.0.2.15:8000/api/logout', { 
                 method: 'GET',
                 credentials: 'include'
             })

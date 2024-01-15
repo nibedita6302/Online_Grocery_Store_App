@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import {emitter} from '../main.js'
 import {mapMutations} from 'vuex'
 
 export default { 
@@ -68,7 +67,6 @@ export default {
                     })
                     this.message=data.message;
                     this.msg_type='text-success';
-                    emitter.emit('isLoggedIn', true);
                 }  
             }catch(error){console.log(error.message)} ;
         }
