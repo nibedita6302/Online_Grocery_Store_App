@@ -4,8 +4,9 @@
             <div v-if="c.product_count>0||allowCRUD()" class="card bg-dark text-white h-100"  >
                 <img :src="get_url(c.c_image)" class="card-img-top" :alt="c.c_image">
                 <div class="card-img-overlay">
-                    <h3 class="card-title stretched-link" @click="categoryShow(c.c_id)">
-                        {{ c.c_name }}
+                    <h3 class="card-title" @click="categoryClicked(c.c_id)">
+                        <router-link to="/show-products" 
+                        class="text-white text-decoration-none">{{ c.c_name }}</router-link>
                     </h3>
                 </div>
                 <div v-show="allowCRUD()" class="card-footer text-center">
@@ -30,8 +31,7 @@
 
 <script>
 import CategoryForm from './CategoryForm.vue';
-import {emitter} from '../main.js'
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
     name: 'CategoryList',
@@ -47,6 +47,8 @@ export default {
         CategoryForm
     },
     methods:{
+        ...mapMutations('product_display',['SET_CATEGORY_ID','STORE_PRODUCT_LIST']),
+
         get_url(img){
             return require('@/assets/upload/'+img); 
         },
@@ -55,9 +57,16 @@ export default {
             if(this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager') { return true }
             return false
         },
-        categoryShow(c_id){
-            // console.log('here')
-            emitter.emit('showProducts',c_id);
+        async categoryClicked(id){ // on category click
+            console.log('here categoryclick',id)
+            const prodList = await this.get_products_under_category(id); //fetch product under c_id
+            console.log(prodList,'productList')
+            this.STORE_PRODUCT_LIST({ //store to product_display
+                productList: prodList
+            })
+            this.SET_CATEGORY_ID({  // store category id
+                c_id: id 
+            })
         },
         selectApi_byRole(action,c_id){
             if (this.GET_USER_ROLE=='admin'){
@@ -71,12 +80,6 @@ export default {
             }else{
                 this.sendApproval();
             }
-        },
-        async deleteCategory(){
-
-        },
-        async sendApproval(){
-
         },
         async getAllCategory(){
             try{
@@ -92,7 +95,28 @@ export default {
                 console.log(error);
             }
             return null;
-        }   
+        },
+        async deleteCategory(){
+
+        },
+        async sendApproval(){
+
+        },
+        async get_products_under_category(c_id){
+            try{
+                const res = await fetch('http://10.0.2.15:8000/api/product/category/'+c_id,{
+                    credentials: 'include'
+                });
+                if (!res.ok) {
+                    throw Error("HTTP Error: "+ res.message+" "+ res.status);
+                }
+                const data = await res.json();
+                // console.log(data);
+                return data;
+            }catch(error) {
+                console.log('Error at ProductList',error);
+            }
+        }  
     },
     computed: {
         ...mapGetters('auth',['GET_USER_ROLE'])
@@ -125,6 +149,9 @@ export default {
     img{
         max-height: 300px;
         max-width: 500px;
+    }
+    router-link{
+        color: white;
     }
 </style>
   

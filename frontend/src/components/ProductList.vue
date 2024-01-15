@@ -1,11 +1,10 @@
-
 <template>
     <div id='top' class="row row-cols-1 row-cols-md-3 g-2">
-        <div v-if="!this.products.length && !c_id">
+        <div v-if="!this.GET_SEARCH_OUTPUT.length && !this.GET_CATEGORY_ID">
             <h3>No Products Found!</h3>
             <em>Please check for any spelling mistakes...</em>
         </div>
-        <div v-for="p in products" class="col-3">
+        <div v-for="p in this.get_products()" class="col-3">
             <div class="card h-100">
                 <img :src="get_url(p.p_image)" class="card-img-top" :alt="p.p_image">
                 <div class="card-body">
@@ -17,7 +16,7 @@
                         Only few left!
                     </p>
                     <p v-else class="card-text" style="color:red;">Out of Stock</p>
-                    <form v-if="user.r">
+                    <form v-if="this.GET_USER_ROLE=='customer'">
                         <input type="number" value="1" min="1" :max="p.stock_remaining" required/>
                         <button class="btn btn-warning" @click="addToCart" :disabled="p.stock_remaining==0">
                             Add to Cart
@@ -30,47 +29,40 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from 'vuex';
+
 export default {
-    props: ['c_id'],
     name: 'ProductList',
     data() {
-        return {
-            products: [],
-            user: JSON.parse(localStorage.getItem('user'))
-        }
+        return {}
     },
     methods:{
         get_url(img){
             return require('@/assets/upload/'+img); 
         },
-        listenSearch(products) {
-            this.products = products;
+        get_products(){
+            // if product under category
+            if (this.GET_CATEGORY_ID!=null){
+                console.log('fetch call products',this.GET_PRODUCT_LIST);
+                return this.GET_PRODUCT_LIST;
+            // if product under Search
+            }else if (this.showProducts){ 
+                console.log('search output'); 
+                return this.GET_SEARCH_OUTPUT;
+            }
         },
         addToCart(){
 
         }
     },
-    watch: {
-        c_id: async function(){
-            try{
-                const res = await fetch('http://10.0.2.15:8000/api/product/category/'+this.c_id);
-                if (!res.ok) {
-                    throw Error("HTTP Error: "+ res.message+" "+ res.status);
-                }
-                const data = await res.json();
-                console.log(data);
-                this.products = data;
-            }catch(error) {
-                console.log(error);
-            }
-            return null;
-        }
+    computed:{
+        ...mapGetters('auth',['GET_USER_ROLE']),
+        ...mapGetters('searching',['GET_SEARCH_OUTPUT']),    
+        ...mapState('searching',['showProducts']),   
+        ...mapGetters('product_display',['GET_CATEGORY_ID','GET_PRODUCT_LIST']) 
     },
-    mounted() {
-        this.emitter.on("searchProducts", this.listenSearch);
-    },
-    beforeUnmount(){
-        this.emitter.off("searchProducts", this.listenSearch);
+    beforeRouteLeave(to, from, next){
+        
     }
 }
 </script>
