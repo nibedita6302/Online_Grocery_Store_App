@@ -34,7 +34,7 @@ class Login(Resource):
                 return {'message':'Your Registration has been denied.'}, 401
             if u.match_password(args['password']):
                 login_user(u)
-                print(current_user, 'from login - authentication', current_user.is_authenticated)
+                # print(current_user, 'from login - authentication', current_user.is_authenticated)
                 # print(current_user.get_auth_token(), current_user.get_auth_token()==current_user.fs_uniquifier)
                 login_data = {'id':u.id,
                               'message':'Login Successful', 
@@ -46,8 +46,6 @@ class Login(Resource):
         return {'message':'Email not registered'}, 401
     
 class Logout(Resource):
-    @auth_required('token')
-    @login_required
     def get(self):
         print(current_user, 'from logout - authentication', current_user.is_authenticated)
         logout_user()
@@ -108,7 +106,7 @@ class ManagerApproval(Resource):
         self.parser.add_argument('approved', type=int, choices=[-1,1], help='Invalid Choice')
     
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def get(self):
         data = Users.query.filter_by(active=0)
         store_manager_data = []
@@ -118,7 +116,7 @@ class ManagerApproval(Resource):
         return marshal(store_manager_data, store_manager_fields), 200
     
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def post(self, id):
         args = self.parser.parse_args()
         sm = Users.query.get(id)
@@ -142,14 +140,14 @@ class AddressCRUD(Resource):
         self.parser.add_argument('pincode', type=str, help='Enter only 7 digits.')
 
     @roles_required('customer')
-    @login_required
+    @auth_required('token')
     def get(self, user_id):
         args = self.parser.parse_args()
         c = Users.query.get(user_id)
         return marshal(c.addresses, address_fields), 200
     
     @roles_required('customer')
-    @login_required
+    @auth_required('token')
     def post(self, user_id):
         args = self.parser.parse_args()
         a1 = Address(**args, user_id=user_id)
@@ -157,8 +155,8 @@ class AddressCRUD(Resource):
         db.session.commit()
         return 200
     
-    @roles_required('customer')    
-    @login_required
+    @roles_required('customer') 
+    @auth_required('token')
     def put(self, user_id):
         args = self.parser.parse_args()
         a1 = Address.query.get(args['a_id'])
@@ -168,7 +166,7 @@ class AddressCRUD(Resource):
         return 200
     
     @roles_required('customer')
-    @login_required
+    @auth_required('token')
     def delete(self, user_id):
         args = self.parser.parse_args()
         a1 = Address.query.get(args['a_id'])
