@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+# from application.utils import is_alphanum_space
 from application.data.models.inventory import *
 from application.data.models.users import Users
 from application.data.models.users import Logs
@@ -12,6 +13,7 @@ from flask_login import login_required, current_user
 from flask_security import auth_required, roles_required, roles_accepted
 
 product_fields = {
+    'p_id': fields.Integer,
     'p_name': fields.String,
     'p_description' : fields.String,
     'brand': fields.String,
@@ -47,7 +49,7 @@ class ProductCRUD(Resource):
         return marshal(product_data, product_fields),  200
   
     @roles_required('store_manager')
-    @login_required
+    @auth_required('token')
     def post(self):
         id=1
         image = None
@@ -82,7 +84,7 @@ class ProductCRUD(Resource):
         return {'message':'New Product Created'}, 200
 
     @roles_required('store_manager')
-    @login_required
+    @auth_required('token')
     def put(self, p_id):
         try:
             p1 = Products.query.get(p_id)
@@ -112,10 +114,10 @@ class ProductCRUD(Resource):
                    action_on=p1.p_id, date=datetime.now(), is_admin=True)
         db.session.add(log)
         db.session.commit()
-        return 200
+        return  200
     
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def delete(self, p_id):
         p1 = Products.query.get(p_id)
         p1.is_deleted = True
@@ -125,7 +127,7 @@ class ProductCRUD(Resource):
         db.session.commit()
         return {'message':f'Product (p_id:{p_id}) deletion confirmed.'}, 200
 
-class ProductCategoryView(Resource):
+class ProductCategoryView(Resource): #all products under a category
     def get(self, c_id):
         product_data = Products.query.filter_by(c_id=c_id).all()
         return marshal(product_data, product_fields),  200
@@ -138,7 +140,7 @@ category_fields = {
     'o_id': fields.Integer
 }
 
-class CategoryGet(Resource):
+class CategoryGet(Resource): # get data of a category - incase of forms
     def get(self, c_id):
         category_data = Category.query.get(c_id)
         return marshal(category_data,category_fields),  200
@@ -158,7 +160,7 @@ class CategoryCRUD(Resource):
         return marshal(category_data,category_fields),  200
     
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def post(self):
         id=1
         image = None
@@ -189,15 +191,18 @@ class CategoryCRUD(Resource):
         return {'message':'New Category Created'}, 200
 
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def put(self, c_id):
         image = None
         c1 = Category.query.get(c_id)
         try:
             formData = request.form.to_dict()
-            c1.c_name = formData['c_name']
-            if not formData['c_name'].isalnum():
-                return {'message':'Category name must be of only one word'}, 400
+            # print(formData)
+            if formData['c_name']!='' :
+                if not formData['c_name'].isalnum(): #only 1 word for image nameing
+                    # print('in - message1')
+                    return {'message':'Category name must be of only one word'}, 400
+                c1.c_name = formData['c_name']
             if 'c_image' in request.files:
                 image = request.files['c_image']
                 if image.filename != "":
@@ -206,10 +211,13 @@ class CategoryCRUD(Resource):
                     img_path = formData['c_name'].lower()+'_'+str(c1.c_id)+extension
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
                     c1.c_image = img_path
-                    if os.path.exists(old_image):
+                    if os.path.exists(old_image) and formData['c_name']!='':
+                        print('in')
                         os.remove(old_image)
-        except:
+        except Exception as err:
+            print('Error',err)
             return {'message': 'Creation Failed! Some Error Occured.'}, 500
+        print(current_user, 'from login - authentication', current_user.is_authenticated)
         log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
                    action_on=c_id, date=datetime.now(), is_admin=True)
         db.session.add(log)
@@ -217,7 +225,7 @@ class CategoryCRUD(Resource):
         return 200
     
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def delete(self, c_id):
         c1 = Category.query.get(c_id)
         print(c1.products)
@@ -249,7 +257,7 @@ class ReviewCRUD(Resource):
         return marshal(review_data, review_fields), 200
     
     @roles_required('customer')
-    @login_required
+    @auth_required('token')
     def post(self, p_id):
         args = self.parser.parse_args()
         r1 = Review(**args, user_id=current_user.id, p_id=p_id)
