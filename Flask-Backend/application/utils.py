@@ -1,6 +1,7 @@
 from bcrypt import hashpw, gensalt, checkpw
 from .data.models.inventory import *
 from datetime import datetime
+from re import compile
 
 def hash_password(plain_pw):
     salt = gensalt()
@@ -50,3 +51,7 @@ def parseProductFromData(form):
         elif i=='expieryDate':
             form[i] = datetime.strptime(form['expieryDate'],f'%Y-%m-%d')
     return form
+
+def is_alphanum_space(str):
+    pattern = compile(r'[a-zA-Z0-9 ]*$')
+    return pattern.match(str) is not None
