@@ -1,6 +1,6 @@
 <template>
-    <div  class="modal fade " id="formModal" 
-        tabindex="-1" aria-labelledby="formModalLabel" >
+    <div  class="modal fade " id="formModal2" 
+        tabindex="-1" aria-labelledby="formModal2Label" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body ">
@@ -23,7 +23,7 @@
                     v-model="f.data" />
             </div>
             <button type="submit" class="btn btn-success" 
-            data-bs-toggle="modal" data-bs-target="#formModal"
+            data-bs-toggle="modal" data-bs-target="#formModal2"
             @click="selectApi">Confirm</button>
         </form>
     </div>          
@@ -34,8 +34,7 @@ import { mapGetters } from 'vuex';
 
 export default{
     props: {
-        'action': String,
-        'c_id': Number
+        'action': String
     },
     name: 'CategoryForm',
     data(){

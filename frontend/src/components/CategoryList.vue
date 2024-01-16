@@ -1,4 +1,17 @@
 <template>
+    <div  class="modal fade " id="formModal1" 
+        tabindex="-1" aria-labelledby="formModal1Label" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body ">
+                    <h5>{{ this.msg }}</h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id='top' class="row g-2">
         <div v-for="c in categories" class="col-4">
             <div v-if="c.product_count>0||allowCRUD()" class="card bg-dark text-white h-100"  >
@@ -17,6 +30,7 @@
                         </svg>
                     Update</button>
                     <button type="submit" class="btn btn-danger" 
+                    data-bs-toggle="modal" data-bs-target="#formModal1"
                     @click="selectApi_byRole('DELETE',c)">
                         <svg id="in-btn" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
                             <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5m-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5M4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5"/>
@@ -26,7 +40,7 @@
             </div>
         </div>
     </div>
-    <CategoryForm v-if="show_category_update_form" :action="this.action"  /> <!-- :c_id="this.c_id" -->
+    <CategoryForm v-if="show_category_update_form" :action="this.action"  /> 
 </template>
 
 <script>
@@ -40,7 +54,7 @@ export default {
             categories: [],
             show_category_update_form: false,
             action: '',
-            // c_id: null
+            msg: 'Operation Successful!'
         }
     },
     components:{
@@ -59,7 +73,6 @@ export default {
             return false
         },
         async categoryClicked(id){ // on category click
-            // console.log('here categoryclick',id)
             const prodList = await this.get_products_under_category(id); //fetch product under c_id
             // console.log(prodList,'productList')
             this.STORE_PRODUCT_LIST({ //store to product_display
@@ -78,9 +91,8 @@ export default {
                     this.STORE_FORM_DATA({
                         data: c
                     })
-                    // this.c_id=c_id;
                 }else{
-                    this.deleteCategory();
+                    this.deleteCategory(c.c_id);
                 }
             }else{
                 this.sendApproval();
@@ -92,7 +104,7 @@ export default {
                     credentials: 'include'
                 });
                 if (!res.ok) {
-                    throw Error("HTTP Error in CategoryList: "+ res.status);
+                    throw Error("HTTP Error in CategoryList - GetAll: "+ res.status);
                 }
                 const data = await res.json();
                 this.categories = data;
@@ -101,8 +113,20 @@ export default {
             }
             return null;
         },
-        async deleteCategory(){
-
+        async deleteCategory(c_id){
+            await fetch('http://10.0.2.15:8000/api/category/'+c_id+
+                        '/delete?auth_token='+this.GET_USER_TOKEN, {
+                method: 'DELETE',
+                credentials: 'include'
+            }).then((res)=>{
+                if (!res.ok) {
+                    throw Error("HTTP Error in CategoryList - Delete: "+ res.status);
+                }
+                return res.json()
+            }).then((data)=>{
+                this.msg = data.message;
+                console.log(this.msg)
+            }).catch((error)=>{console.log(error);})
         },
         async sendApproval(){
 
@@ -124,7 +148,7 @@ export default {
         }  
     },
     computed: {
-        ...mapGetters('auth',['GET_USER_ROLE'])
+        ...mapGetters('auth',['GET_USER_ROLE','GET_USER_TOKEN'])
     },
     mounted() { 
         this.getAllCategory();
