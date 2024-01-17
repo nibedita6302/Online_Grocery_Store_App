@@ -28,6 +28,7 @@ export default {
     },
     methods:{
         ...mapMutations('searching', ['STORE_SEARCH_PRODUCTS','TOGGLE_SEARCH_OUTPUT']),
+        ...mapMutations('product_display',['TOGGLE_ONCLICK_CATEGORY']),
         async search(){
             await this.fetchSearchOutput();
             // synch function
@@ -56,7 +57,10 @@ export default {
             // console.log('out',this.search_output)
             this.STORE_SEARCH_PRODUCTS({
                 searchOutput: this.search_output 
-            });
+            })
+            this.TOGGLE_ONCLICK_CATEGORY({
+                setTo: false
+            })
         }
     }
 }   
