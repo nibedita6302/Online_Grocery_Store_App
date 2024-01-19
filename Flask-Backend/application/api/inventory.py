@@ -58,7 +58,7 @@ class ProductCRUD(Resource):
             formData = parseProductFromData(formData) # validating form
             print(formData)
             if not formData['p_name'].isalnum():
-                return {'message':'Category name must be of only one word'}, 400
+                return {'message':'Category name must be of only one word'}, 202
             p = Products.query.order_by(Products.p_id.desc()).first()
             p1 = Products(**formData, stock_remaining=formData['stock'])
             if 'p_image' in request.files:
@@ -69,14 +69,19 @@ class ProductCRUD(Resource):
                         id=p.p_id+1
                     img_path = formData['p_name'].lower()+'_'+str(id)+extension
                     print(img_path)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     p1.p_image = img_path
             # increment category product_count
             c1 = Category.query.get(p1.c_id)
             c1.product_count+=1
             db.session.add(p1)
-        except:
-            return {'message': 'Creation Failed! Some Error Occured.'}, 500
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                print(e)
+                return {'message': 'Creation Failed! Some Error Occured.'}, 500
         log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name, 
                    action_on=id, date=datetime.now())
         db.session.add(log)
@@ -88,10 +93,13 @@ class ProductCRUD(Resource):
     def put(self, p_id):
         try:
             p1 = Products.query.get(p_id)
+            if (p1.user_id!=current_user.id):
+                return {'message':'Permission Denied!'}, 403
+            
             formData = request.form.to_dict()
             formData = parseProductFromData(formData) # validating form
             if 'p_name' in formData and (not formData['p_name'].isalnum()):
-                return {'message':'Category name must be of only one word'}, 400
+                return {'message':'Category name must be of only one word'}, 202
             for col in Products.__table__.columns:
                 if col.name in formData:
                     if col.name == 'stock':
@@ -100,10 +108,10 @@ class ProductCRUD(Resource):
             if 'p_image' in request.files:
                 image = request.files['p_image']
                 if image.filename != "":
-                    old_image = os.path.join(app.config['UPLOAD_FOLDER'],p1.p_image)
+                    old_image = os.path.join(app.config['UPLOAD_FOLDER']+'upload/',p1.p_image)
                     extension = '.'+image.filename.split('.')[-1]
                     img_path = formData['p_name'].lower()+'_'+str(p1.p_id)+extension
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     p1.p_image = img_path
                     if os.path.exists(old_image):
                         os.remove(old_image)
@@ -120,6 +128,8 @@ class ProductCRUD(Resource):
     @auth_required('token')
     def delete(self, p_id):
         p1 = Products.query.get(p_id)
+        if (p1.user_id!=current_user.id):
+            return {'message':'Permission Denied!'}, 403
         p1.is_deleted = True
         log = Logs(user_id=current_user.id, action='DELETE', table_name=self.table_name,
                    action_on=p_id, date=datetime.now(), is_admin=True)
@@ -168,7 +178,7 @@ class CategoryCRUD(Resource):
             formData = request.form.to_dict()
             print(formData)
             if not formData['c_name'].isalnum():
-                return {'message':'Category name must be of only one word'}, 400
+                return {'message':'Category name must be of only one word'}, 202
             c = Category.query.order_by(Category.c_id.desc()).first()
             c1 = Category(**formData)
             if 'c_image' in request.files:
@@ -179,11 +189,16 @@ class CategoryCRUD(Resource):
                         id=c.c_id+1
                     img_path = formData['c_name'].lower()+'_'+str(id)+extension
                     print(img_path)
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     c1.c_image = img_path
             db.session.add(c1)
-        except:
-            return {'message': 'Creation Failed! Some Error Occured.'}, 500
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                print(e)
+                return {'message': 'Creation Failed! Some Error Occured.'}, 500
         log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name,
                    action_on=id, date=datetime.now(), is_admin=True)
         db.session.add(log)
@@ -201,15 +216,15 @@ class CategoryCRUD(Resource):
             if formData['c_name']!='' :
                 if not formData['c_name'].isalnum(): #only 1 word for image nameing
                     # print('in - message1')
-                    return {'message':'Category name must be of only one word'}, 400
+                    return {'message':'Category name must be of only one word'}, 202
                 c1.c_name = formData['c_name']
             if 'c_image' in request.files:
                 image = request.files['c_image']
                 if image.filename != "":
-                    old_image = os.path.join(app.config['UPLOAD_FOLDER'],c1.c_image)
+                    old_image = os.path.join(app.config['UPLOAD_FOLDER']+'upload/',c1.c_image)
                     extension = '.'+image.filename.split('.')[-1]
                     img_path = formData['c_name'].lower()+'_'+str(c1.c_id)+extension
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER'],img_path))
+                    image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     c1.c_image = img_path
                     if os.path.exists(old_image) and formData['c_name']!='':
                         print('in')
@@ -259,9 +274,16 @@ class ReviewCRUD(Resource):
     @roles_required('customer')
     @auth_required('token')
     def post(self, p_id):
-        args = self.parser.parse_args()
-        r1 = Review(**args, user_id=current_user.id, p_id=p_id)
-        db.session.add(r1)
-        db.session.commit()
-        return 200
+        try:
+            args = self.parser.parse_args()
+            r1 = Review(**args, user_id=current_user.id, p_id=p_id)
+            db.session.add(r1)
+            db.session.commit()
+            return 200
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)
     

@@ -25,16 +25,17 @@ class Login(Resource):
         self.parser.add_argument('password', type=str, help='Enter valid password.', required=True)
     
     def post(self):
+        print('here')
         args = self.parser.parse_args()
         u = Users.query.filter_by(email=args['email']).first()
         if u is not None:
             if u.active==0 and u.roles[0].name=='store_manager':
-                return {'message':'Your Registration is not yet Approved.'}, 401
+                return {'message':'Your Registration is not yet Approved.'}, 202
             elif u.active==-1 and u.roles[0].name=='store_manager':
-                return {'message':'Your Registration has been denied.'}, 401
+                return {'message':'Your Registration has been denied.'}, 202
             if u.match_password(args['password']):
                 login_user(u)
-                # print(current_user, 'from login - authentication', current_user.is_authenticated)
+                print(current_user, 'from login - authentication', current_user.is_authenticated)
                 # print(current_user.get_auth_token(), current_user.get_auth_token()==current_user.fs_uniquifier)
                 login_data = {'id':u.id,
                               'message':'Login Successful', 
@@ -42,8 +43,8 @@ class Login(Resource):
                               'token': current_user.get_auth_token()
                             }
                 return marshal(login_data, login_fields), 200
-            return {'message':'Invalid Password'}, 401
-        return {'message':'Email not registered'}, 401
+            return {'message':'Invalid Password'}, 202
+        return {'message':'Email not registered'}, 202
     
 class Logout(Resource):
     def get(self):
@@ -61,21 +62,31 @@ class CustomerRegister(Resource):
     
     def post(self):
         args = self.parser.parse_args()
-        if (Users.query.filter_by(email=args['email']).first() is None):
-            c = datastore.create_user(email=args['email'], password=hash_password(args['password']))
-            datastore.add_role_to_user(c, 'customer')
-            db.session.add(c)
-            db.session.commit()
-            u1 = Users.query.filter_by(email=args['email']).first()
-            mc = MyCart(user_id=u1.id)   # assign a cart to every new customer
-            co = CustomerOffers(user_id=u1.id, o_id=1)
-            print(co)
-            co.set_use_count()
-            db.session.add(mc)
-            db.session.add(co)
-            db.session.commit()
-            return {'message':'Successfully registered new Users.', 'token':u1.fs_uniquifier}, 200
-        return {'message': 'Email already exists.'}, 400
+        # print('before',Users.query.filter_by(email=args['email']).first())
+        try: 
+            if (Users.query.filter_by(email=args['email']).first() is None):
+                # print('here')
+                c = datastore.create_user(email=args['email'], password=hash_password(args['password']))
+                datastore.add_role_to_user(c, 'customer')
+                # print('done',c)
+                db.session.add(c)
+                db.session.commit()
+                u1 = Users.query.filter_by(email=args['email']).first()
+                mc = MyCart(user_id=u1.id)   # assign a cart to every new customer
+                co = CustomerOffers(user_id=u1.id, o_id=1)
+                # print(co)
+                co.set_use_count()
+                db.session.add(mc)
+                db.session.add(co)
+                db.session.commit()
+                return {'message':'Successfully registered new Users.'}, 200
+            return {'message': 'Email already exists.'}, 202
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)
 
 class StoreManagerRegister(Resource):
     def __init__(self):
@@ -86,14 +97,21 @@ class StoreManagerRegister(Resource):
     
     def post(self):
         args = self.parser.parse_args()
-        if (Users.query.filter_by(email=args['email']).first() is None):
-            sm = datastore.create_user(email=args['email'], password=hash_password(args['password']), active=0)
-            datastore.add_role_to_user(sm, 'store_manager')
-            db.session.add(sm)
-            db.session.commit()
-            sm1 = Users.query.filter_by(email=args['email']).first()
-            return {'message':'Registration Successful.', 'token':sm1.fs_uniquifier}, 200
-        return {'message': 'Email already exists.'}, 400
+        try:
+            if (Users.query.filter_by(email=args['email']).first() is None):
+                sm = datastore.create_user(email=args['email'], password=hash_password(args['password']), active=0)
+                datastore.add_role_to_user(sm, 'store_manager')
+                db.session.add(sm)
+                db.session.commit()
+                sm1 = Users.query.filter_by(email=args['email']).first()
+                return {'message':'Registration Successful.'}, 200
+            return {'message': 'Email already exists.'}, 202
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)
 
 store_manager_fields = {
     "id": fields.Integer,
@@ -149,11 +167,18 @@ class AddressCRUD(Resource):
     @roles_required('customer')
     @auth_required('token')
     def post(self, user_id):
-        args = self.parser.parse_args()
-        a1 = Address(**args, user_id=user_id)
-        db.session.add(a1)
-        db.session.commit()
-        return 200
+        try:
+            args = self.parser.parse_args()
+            a1 = Address(**args, user_id=user_id)
+            db.session.add(a1)
+            db.session.commit()
+            return 200
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)
     
     @roles_required('customer') 
     @auth_required('token')

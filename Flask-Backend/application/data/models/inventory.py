@@ -14,7 +14,7 @@ Relationships:
 class Category(db.Model):
     __tablename__ = 'category'
     c_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    c_name = db.Column(db.String, nullable=False)
+    c_name = db.Column(db.String, unique=True, nullable=False)
     product_count = db.Column(db.Integer, default=0, nullable=False)
     c_image = db.Column(db.String, unique=True, nullable=False)
     #category discount - applied on all products under category
@@ -36,6 +36,7 @@ class Products(db.Model):
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     expieryDate = db.Column(db.Date, nullable=False)
     c_id = db.Column(db.Integer, db.ForeignKey('category.c_id')) #category
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) # user - created by
     reviews = db.relationship('Review', lazy=True, cascade='all, delete, delete-orphan')
 
 class Review(db.Model):

@@ -32,17 +32,24 @@ class CustomerOfferCRUD(Resource):
     @roles_required('store_manager')
     @login_required
     def post(self):
-        args = self.parser.parse_args()
-        offer = Offers(**args)
-        db.session.add(offer)
-        db.session.commit()
-        # add to logs
-        offer = Offers.query.order_by(Offers.o_id.desc()).first()
-        log = Logs(user_id=current_user.id, action='POST', table_name=offer.__tablename__, 
-                   action_on=offer.o_id, date=datetime.now())
-        db.session.add(log)
-        db.session.commit()
-        return 200
+        try:
+            args = self.parser.parse_args()
+            offer = Offers(**args)
+            db.session.add(offer)
+            db.session.commit()
+            # add to logs
+            offer = Offers.query.order_by(Offers.o_id.desc()).first()
+            log = Logs(user_id=current_user.id, action='POST', table_name=offer.__tablename__, 
+                    action_on=offer.o_id, date=datetime.now())
+            db.session.add(log)
+            db.session.commit()
+            return 200
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)
     
     @roles_required('customer')   # customer buying offer
     @login_required
@@ -98,19 +105,26 @@ class CategoryOfferCRUD(Resource):
     @roles_required('admin')
     @login_required
     def post(self, c_id):
-        args = self.parser.parse_args()
-        co = CategoryOffers(**args)
-        db.session.add(co)
-        db.session.commit()
-        # add to logs
-        offer = CategoryOffers.query.order_by(CategoryOffers.o_id.desc()).first()
-        log = Logs(user_id=current_user.id, action='POST', table_name=offer.__tablename__, 
-                   action_on=offer.o_id, date=datetime.now(), is_admin=1)
-        catg = Category.query.get(c_id)
-        catg.o_id = offer.o_id
-        db.session.add(log)
-        db.session.commit()
-        return 200
+        try:
+            args = self.parser.parse_args()
+            co = CategoryOffers(**args)
+            db.session.add(co)
+            db.session.commit()
+            # add to logs
+            offer = CategoryOffers.query.order_by(CategoryOffers.o_id.desc()).first()
+            log = Logs(user_id=current_user.id, action='POST', table_name=offer.__tablename__, 
+                    action_on=offer.o_id, date=datetime.now(), is_admin=1)
+            catg = Category.query.get(c_id)
+            catg.o_id = offer.o_id
+            db.session.add(log)
+            db.session.commit()
+            return 200
+        except Exception as e:
+            if ('UNIQUE constraint failed' in str(e.args[0])):
+                print('UNIQUE constraint error ignored!')
+                return
+            else:
+                return Exception(e)        
     
     @roles_required('admin')
     @login_required

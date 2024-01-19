@@ -44,6 +44,7 @@ class Users(db.Model, UserMixin):
     addresses = db.relationship('Address', lazy=True, cascade='all, delete')
     reviews = db.relationship('Review', cascade='all, delete')
     transactions = db.relationship('Transaction', lazy=True, cascade='all, delete')
+    prodCreated = db.relationship('Products', backref='createdBy') # store-manager created products
     __table_args__= (
         # 1->Denied, 0->Waiting, 1->Approved
         db.CheckConstraint('active IN (-1,0,1)', name='user_active'),
