@@ -122,9 +122,9 @@ api.add_resource(CategoryCRUD, '/category', '/category/<int:c_id>/edit', '/categ
 api.add_resource(CategoryGet, '/category/<int:c_id>')
 api.add_resource(ReviewCRUD, '/product/<int:p_id>/review', '/customer/product/<int:p_id>/review')
 
-from application.api.confirmation import RequestConfirmation, ReturnConfirmation
-api.add_resource(RequestConfirmation, '/confirmation-request', '/confirmation-request/<table>/<int:id>')
-api.add_resource(ReturnConfirmation, '/admin/confirmation-return/<int:cn_id>')
+from application.api.requests import RequestConfirmation, ReturnConfirmation
+api.add_resource(RequestConfirmation, '/requests', '/requests/create')
+api.add_resource(ReturnConfirmation, '/admin/requests/<int:cn_id>')
 
 from application.api.shopping import MyCartCRUD, TransactionConfirm, PlaceOrder
 api.add_resource(MyCartCRUD, '/customer/<int:user_id>/mycart', '/customer/<int:user_id>/mycart/delete/<int:p_id>',
