@@ -4,10 +4,11 @@
         <Login />
         <hr>
         <div class="container d-flex justify-content-center">
-            <Register id='register' title="New Customer Register" button_msg="Register" 
-            button_type="btn btn-warning"/>
-            <Register id='register' title="Store Manager Register" button_msg="Apply for Approval"
-            button_type="btn btn-danger"/>
+            <Register title="New Customer Register" button_msg="Register" 
+            button_type="btn btn-warning" role="customer"/>
+            <div class="spacer"></div>
+            <Register title="Store Manager Register" button_msg="Apply for Approval"
+            button_type="btn btn-danger" role="store_manager"/>
         </div>
     </div>
 </template>
@@ -30,7 +31,7 @@ export default {
         padding: 20px;
         text-align: center;
     }
-    #register {
+    .spacer{
         padding-left: 10px;
         padding-right: 10px;
     }

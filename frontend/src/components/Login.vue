@@ -39,12 +39,21 @@ export default {
     },
     methods: {
         ...mapMutations('auth',['SET_LOGIN_USER_DATA']),
-        async loginUser(){
+        loginUser(){
+            if (this.password==''||this.email==''){
+                this.message = 'All field are compulsory!'
+                this.msg_type = 'text-danger'
+            }
+            else { this.login(); }
+        },
+        async login(){
             try{
                 const res = await fetch('http://10.0.2.15:8000/api/login', {
                     method: "POST",
+                    mode: "cors",
                     headers: {
-                        'Content-Type':'application/json'
+                        'Content-Type':'application/json',
+                        'Access-Control-Allow-Origin': '*'
                     },
                     body: JSON.stringify({
                         email:this.email,
@@ -53,7 +62,7 @@ export default {
                     credentials: 'include' 
                 })
                 const data = await res.json()
-                if (res.status==401) {
+                if (res.status==202) {
                     this.message=data.message;
                     this.msg_type='text-danger';
                 } else if(!res.ok){
