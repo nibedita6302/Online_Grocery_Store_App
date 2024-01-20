@@ -36,7 +36,7 @@ class Products(db.Model):
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
     expieryDate = db.Column(db.Date, nullable=False)
     c_id = db.Column(db.Integer, db.ForeignKey('category.c_id')) #category
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) # user - created by
+    creator = db.Column(db.Integer, db.ForeignKey('users.id')) # user - created by
     reviews = db.relationship('Review', lazy=True, cascade='all, delete, delete-orphan')
 
 class Review(db.Model):
