@@ -14,13 +14,17 @@
     </div>
     <div class="container">
         <form id="catg-form"  @submit.prevent="selectApi">
-            <legend>Update Category: {{this.GET_FORM_DATA.c_name}}</legend>
+            <legend v-if="this.GET_FORM_DATA!=null">
+                Update Category: {{this.GET_FORM_DATA.c_name}}
+            </legend>
+            <legend v-else> Create Category </legend>
+
             <div v-for="f in form_fields" class="mb-3">
                 <label :for="f.id">{{ f.label }}:</label>
-                <input v-if="f.type=='file'" :type="f.type" :id="f.id" accept="image/*" >
+                <input v-if="f.type=='file'" :type="f.type" :id="f.id" accept="image/*" :required="isRequired">
                 <input v-else :type="f.type" :id="f.id" 
-                    :placeholder="this.GET_FORM_DATA[f.id]" 
-                    v-model="f.data" />
+                    :placeholder="placeholder(f.id)" 
+                    v-model="f.data" :required="isRequired"/>
             </div>
             <button type="submit" class="btn btn-success" 
             data-bs-toggle="modal" data-bs-target="#formModal2"
@@ -33,10 +37,10 @@
 import { mapGetters } from 'vuex';
 
 export default{
+    name: 'CategoryForm',
     props: {
         'action': String
     },
-    name: 'CategoryForm',
     data(){
         return {
             form_fields: [
@@ -47,22 +51,34 @@ export default{
         }
     },
     methods:{
+        isRequired(){
+            if (this.GET_USER_ROLE=='admin'){
+                return true
+            }
+            return false
+        },
+        placeholder(id){
+            if (this.GET_FORM_DATA!=null){
+                return this.GET_FORM_DATA[id]
+            } return ' '
+        },
         selectApi(){
+            var formData = new FormData()
+            const image = document.getElementById('c_image')
+            if (image && image.files.length>0) {
+                formData.append("c_image",image.files[0]);
+            }
+            for(let f in this.form_fields){
+                if (this.form_fields[f].type!=='file') {
+                    formData.append(this.form_fields[f].id,this.form_fields[f].data);
+                }
+            }
             if (this.$props.action=='PUT'){
-                var formData = new FormData()
-                const image = document.getElementById('c_image')
-                if (image && image.files.length>0) {
-                    formData.append("c_image",image.files[0]);
-                }
-                for(let f in this.form_fields){
-                    if (this.form_fields[f].type!=='file') {
-                        formData.append(this.form_fields[f].id,this.form_fields[f].data);
-                    }
-                }
-                if (this.$props.action=='PUT'){
-                    // console.log('called update');
-                    this.updateCategory(formData);
-                }else{ this.createCategory(formData); }
+                // console.log('called update');
+                this.updateCategory(formData);
+            }else{ 
+                // console.log('create in')
+                this.createCategory(formData); 
             }
         },
         async updateCategory(newData){
@@ -78,15 +94,48 @@ export default{
             }).then((res)=>{
                 return res.json()
             }).then((data)=>{
-                if (data.message) {this.msg = data.message;}
+                if (data!=null) {this.msg = data.message;}
             }).catch((error)=>console.log(error.message))
         },
         async createCategory(newData){
-
-        }
+            await fetch('http://10.0.2.15:8000/api/category/create?auth_token='+this.GET_USER_TOKEN, {
+                method: 'POST',
+                body: newData,
+                mode: 'cors',
+                headers:{
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include'
+            }).then((res)=>{
+                if (!res.ok){
+                    throw Error('HTTP Error at Create Category:'+res.status)
+                }
+                return res.json()
+            }).then((data)=>{
+                if (data!=null) {this.msg = data.message;}
+            }).catch((error)=>console.log(error.message))
+        },
+/*         async requestOnCategory(newData){
+            await fetch('http://10.0.2.15:8000/api/requests?auth_token='+this.GET_USER_TOKEN, {
+                method: 'POST',
+                body: newData,
+                mode: 'cors',
+                headers:{
+                    'Access-Control-Allow-Origin': '*',
+                },
+                credentials: 'include'
+            }).then((res)=>{
+                if (!res.ok){
+                    throw Error('HTTP Error at Request on Category:'+res.status)
+                }
+                return res.json()
+            }).then((data)=>{
+                if (data!=null) {this.msg = data.message;}
+            }).catch((error)=>console.log(error.message))
+        } */
     },
     computed:{
-        ...mapGetters('auth',['GET_USER_TOKEN']),
+        ...mapGetters('auth',['GET_USER_TOKEN','GET_USER_ROLE']),
         ...mapGetters('formdata',['GET_FORM_DATA'])
     },
 
