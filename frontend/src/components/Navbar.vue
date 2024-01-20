@@ -25,7 +25,7 @@
           </li>
           <li class="nav-item">
             <router-link to='#' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
-             active-class="active" class="nav-link">Approvals </router-link>
+             active-class="active" class="nav-link">Requests </router-link>
           </li>
           <li class="nav-item">
             <router-link to='#' v-if="this.GET_USER_ROLE=='admin'" active-class="active" class="nav-link">
@@ -46,7 +46,6 @@
 
 <script>
 import LogoutAlert from './LogoutAlert.vue'
-// import {emitter} from '../main.js'
 import {mapGetters} from "vuex"
 
 export default {
@@ -62,18 +61,11 @@ export default {
       const router = this.$router
       router.push('/')
     }
-    /* 
-    get_login(val){
-      this.id=JSON.parse(localStorage.getItem('id'))
-      this.role=JSON.parse(localStorage.getItem('role'))
-      // emitter.off('isLoggedIn',this.get_login)
-    } */
   },
   computed:{
     ...mapGetters('auth',['GET_USER_ROLE'])
   },
   mounted() {
-    // emitter.on('isLoggedIn',this.get_login)
   }
 }
 </script>

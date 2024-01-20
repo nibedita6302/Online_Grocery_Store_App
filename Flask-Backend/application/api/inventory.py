@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-# from application.utils import is_alphanum_space
 from application.data.models.inventory import *
 from application.data.models.users import Users
 from application.data.models.users import Logs
@@ -25,7 +24,8 @@ product_fields = {
     'p_image': fields.String,
     'is_deleted': fields.Float,
     'expieryDate' : fields.String,
-    'c_id' : fields.Integer #needed??
+    'c_id' : fields.Integer,
+    'creator': fields.Integer
 }
 
 class ProductCRUD(Resource):
@@ -60,7 +60,7 @@ class ProductCRUD(Resource):
             if not formData['p_name'].isalnum():
                 return {'message':'Category name must be of only one word'}, 202
             p = Products.query.order_by(Products.p_id.desc()).first()
-            p1 = Products(**formData, stock_remaining=formData['stock'])
+            p1 = Products(**formData, stock_remaining=formData['stock'], creator=current_user.id)
             if 'p_image' in request.files:
                 image = request.files['p_image']
                 if image.filename != "":
@@ -75,6 +75,12 @@ class ProductCRUD(Resource):
             c1 = Category.query.get(p1.c_id)
             c1.product_count+=1
             db.session.add(p1)
+            # logs
+            log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name, 
+                    action_on=id, date=datetime.now())
+            db.session.add(log)
+            db.session.commit()
+            return {'message':'New Product Created'}, 200
         except Exception as e:
             if ('UNIQUE constraint failed' in str(e.args[0])):
                 print('UNIQUE constraint error ignored!')
@@ -82,53 +88,47 @@ class ProductCRUD(Resource):
             else:
                 print(e)
                 return {'message': 'Creation Failed! Some Error Occured.'}, 500
-        log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name, 
-                   action_on=id, date=datetime.now())
-        db.session.add(log)
-        db.session.commit()
-        return {'message':'New Product Created'}, 200
 
     @roles_required('store_manager')
     @auth_required('token')
     def put(self, p_id):
-        try:
-            p1 = Products.query.get(p_id)
-            if (p1.user_id!=current_user.id):
-                return {'message':'Permission Denied!'}, 403
-            
-            formData = request.form.to_dict()
-            formData = parseProductFromData(formData) # validating form
-            if 'p_name' in formData and (not formData['p_name'].isalnum()):
-                return {'message':'Category name must be of only one word'}, 202
-            for col in Products.__table__.columns:
-                if col.name in formData:
-                    if col.name == 'stock':
-                        p1.stock_remaining = formData['stock']
-                    setattr(p1,col.name,formData[col.name])
-            if 'p_image' in request.files:
-                image = request.files['p_image']
-                if image.filename != "":
-                    old_image = os.path.join(app.config['UPLOAD_FOLDER']+'upload/',p1.p_image)
-                    extension = '.'+image.filename.split('.')[-1]
-                    img_path = formData['p_name'].lower()+'_'+str(p1.p_id)+extension
-                    image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
-                    p1.p_image = img_path
-                    if os.path.exists(old_image):
-                        os.remove(old_image)
-        except Exception as e:
-            print(e)
-            return {'message': 'Creation Failed! Some Error Occured.'}, 500
+        p1 = Products.query.get(p_id)
+        if (p1.creator!=current_user.id):
+            return {'message':'Permission Denied!'}, 403
+        
+        formData = request.form.to_dict()
+        print(formData)
+        formData = parseProductFromData(formData) # validating form
+        print(formData)
+        if 'p_name' in formData and (not formData['p_name'].isalnum()):
+            return {'message':'Category name must be of only one word'}, 202
+        for col in Products.__table__.columns:
+            if col.name in formData:
+                if col.name == 'stock':
+                    p1.stock_remaining = formData['stock']
+                setattr(p1,col.name,formData[col.name])
+        if 'p_image' in request.files:
+            image = request.files['p_image']
+            if image.filename != "":
+                old_image = os.path.join(app.config['UPLOAD_FOLDER']+'upload/',p1.p_image)
+                extension = '.'+image.filename.split('.')[-1]
+                img_path = formData['p_name'].lower()+'_'+str(p1.p_id)+extension
+                image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
+                p1.p_image = img_path
+                if os.path.exists(old_image):
+                    os.remove(old_image)
+        #logs
         log = Logs(user_id=current_user.id, action='PUT', table_name=self.table_name,
-                   action_on=p1.p_id, date=datetime.now(), is_admin=True)
+                action_on=p1.p_id, date=datetime.now(), is_admin=True)
         db.session.add(log)
         db.session.commit()
-        return  200
+        return 200
     
     @roles_required('admin')
     @auth_required('token')
     def delete(self, p_id):
         p1 = Products.query.get(p_id)
-        if (p1.user_id!=current_user.id):
+        if (p1.creator!=current_user.id):
             return {'message':'Permission Denied!'}, 403
         p1.is_deleted = True
         log = Logs(user_id=current_user.id, action='DELETE', table_name=self.table_name,
@@ -178,8 +178,12 @@ class CategoryCRUD(Resource):
             formData = request.form.to_dict()
             print(formData)
             if not formData['c_name'].isalnum():
-                return {'message':'Category name must be of only one word'}, 202
+                return {'message':'Category name must be of only one word'}, 202 
             c = Category.query.order_by(Category.c_id.desc()).first()
+            if c.c_name == formData['c_name']:
+                return 
+            elif Category.query.filter_by(c_name=formData['c_name']).first() is not None:
+                return {'message':'Category already exists'}, 202
             c1 = Category(**formData)
             if 'c_image' in request.files:
                 image = request.files['c_image']
@@ -192,18 +196,18 @@ class CategoryCRUD(Resource):
                     image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     c1.c_image = img_path
             db.session.add(c1)
+            log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name,
+                    action_on=id, date=datetime.now(), is_admin=True)
+            db.session.add(log)
+            db.session.commit()
+            return {'message':'New Category Created'}, 200
         except Exception as e:
             if ('UNIQUE constraint failed' in str(e.args[0])):
                 print('UNIQUE constraint error ignored!')
-                return
+                return 
             else:
                 print(e)
                 return {'message': 'Creation Failed! Some Error Occured.'}, 500
-        log = Logs(user_id=current_user.id, action='POST', table_name=self.table_name,
-                   action_on=id, date=datetime.now(), is_admin=True)
-        db.session.add(log)
-        db.session.commit()
-        return {'message':'New Category Created'}, 200
 
     @roles_required('admin')
     @auth_required('token')

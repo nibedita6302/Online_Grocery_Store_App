@@ -24,8 +24,6 @@ request_fields = {
 }
 
 class RequestConfirmation(Resource):
-    def __init__(self):
-        pass
 
     @roles_accepted('store_manager','admin')
     @auth_required('token')
@@ -82,7 +80,7 @@ class ReturnConfirmation(Resource):
         self.parser.add_argument('comment', type=str)
 
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def put(self, cn_id):
         args = self.parser.parse_args()
         ap1 = RequestOnCategory.query.get(cn_id)

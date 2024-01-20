@@ -43,14 +43,16 @@ def search_product(string):
     return product_list
 
 def parseProductFromData(form):
-    for i in form:
+    newForm = {key:form[key] for key in form if form[key] not in ['', 'undefined']}
+    for i in newForm:
         if i in ['p_qty','price']:
-            form[i]=float(form[i])
+            newForm[i]=float(newForm[i])
         elif i in ['c_id','stock']:
-            form[i]=int(form[i])
+            newForm[i]=int(newForm[i])
         elif i=='expieryDate':
-            form[i] = datetime.strptime(form['expieryDate'],f'%Y-%m-%d')
-    return form
+            newForm[i] = datetime.strptime(newForm['expieryDate'],f'%Y-%m-%d')
+    
+    return newForm
 
 def is_alphanum_space(str):
     pattern = compile(r'[a-zA-Z0-9 ]*$')
