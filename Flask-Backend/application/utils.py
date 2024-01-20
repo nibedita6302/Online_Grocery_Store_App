@@ -15,13 +15,13 @@ def search_category(string):
     product_list = []
     for s in string.split():
         item = '%'+s+'%'
-        print(item)
+        # print(item)
         category = Category.query.filter(Category.c_name.ilike(item)).all()
-        print(category)
+        # print(category)
         for c in category:
             p = c.products
             product_list.extend(p)
-    print(product_list)
+    # print(product_list)
     return product_list
 
 def search_brand(string):
