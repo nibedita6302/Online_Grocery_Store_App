@@ -45,23 +45,28 @@ class RequestConfirmation(Resource):
     def post(self):
         try:
             formData = request.form.to_dict()
-            print(formData)
-            if not formData['c_name'].isalnum():
+            # print(formData)
+            if (formData['action'] in ['POST','PUT']) and (not formData['c_name'].isalnum()):
                 return {'message':'Category name must be of only one word'}, 202
             d = datetime.now()
-            r1 = RequestOnCategory(**formData, requester=current_user.id, req_date=d)
+            img_path = None
             if 'c_image' in request.files:
                 image = request.files['c_image']
                 folder = app.config['UPLOAD_FOLDER']+'pendingUpload/'
                 count = len(os.listdir(folder))
                 if image.filename != "":
                     img_path = image.filename.split('.')[0]+'_'+str(count)+'.'+image.filename.split('.')[-1]
-                    print(img_path)
-                    image.save(os.path.join(folder,img_path))
-                    r1.c_image = img_path
+                    # print(img_path)
+                    image.save(os.path.join(folder,img_path))  
+                    r1 = RequestOnCategory(**formData, c_image=img_path, requester=current_user.id,
+                                            req_date=d)
+            if img_path is None:
+                r1 = RequestOnCategory(**formData, requester=current_user.id, req_date=d)
             db.session.add(r1)
             db.session.commit()
             return 200
+        except ValueError as ve:
+            return {'message':str(ve)}, 202
         except Exception as e:
             if ('UNIQUE constraint failed' in str(e.args[0])):
                 print('UNIQUE constraint error ignored!')
