@@ -26,9 +26,9 @@ request_fields = {
 class RequestConfirmation(Resource):
     def __init__(self):
         pass
-    
+
     @roles_accepted('store_manager','admin')
-    @login_required
+    @auth_required('token')
     def get(self):
         if current_user.roles[0].name=='admin':
             request_data = RequestOnCategory.query.filter_by(status=-1)\
@@ -41,23 +41,21 @@ class RequestConfirmation(Resource):
         return marshal(request_data, request_fields), 200
     
     @roles_required('store_manager') 
-    @login_required
-    # still editting
-    def post(self, table, id=-1):
+    @auth_required('token')
+    def post(self):
         try:
             formData = request.form.to_dict()
             print(formData)
             if not formData['c_name'].isalnum():
                 return {'message':'Category name must be of only one word'}, 202
             d = datetime.now()
-            r1 = RequestOnCategory(**formData, requester=current_user.id, table_name=table, item_id=id,
-                                    req_date=d)
+            r1 = RequestOnCategory(**formData, requester=current_user.id, req_date=d)
             if 'c_image' in request.files:
                 image = request.files['c_image']
                 folder = app.config['UPLOAD_FOLDER']+'pendingUpload/'
                 count = len(os.listdir(folder))
                 if image.filename != "":
-                    img_path = image.filename.split('.')[0]+'_'+count+'.'+image.filename.split('.')[-1]
+                    img_path = image.filename.split('.')[0]+'_'+str(count)+'.'+image.filename.split('.')[-1]
                     print(img_path)
                     image.save(os.path.join(folder,img_path))
                     r1.c_image = img_path

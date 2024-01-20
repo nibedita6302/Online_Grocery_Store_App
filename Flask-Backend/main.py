@@ -84,7 +84,7 @@ from application.data.models.users import *
 from application.data.models.offers import *
 from application.data.models.shopping import *
 from application.data.models.inventory import *
-from application.data.models.confirmation import *
+from application.data.models.requests import *
 from application.data.default_data import create_first, new_customer_offer
 
 with app.app_context():

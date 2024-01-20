@@ -9,8 +9,6 @@ from flask import abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_security import auth_required, roles_required, auth_token_required
 
-# api = Api(prefix="/api")
-
 login_fields = {
 	'id': fields.Integer,
     'message': fields.String,

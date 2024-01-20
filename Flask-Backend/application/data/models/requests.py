@@ -13,11 +13,11 @@ class RequestOnCategory(db.Model):
     requester = db.Column(db.Integer, db.ForeignKey('users.id'))
     req_date = db.Column(db.DateTime, nullable=False)
     #filled by admin
-    status = db.Column(db.Integer, default=0, nullable=False) 
+    status = db.Column(db.Integer, default=-1, nullable=False) 
     last_update_date = db.Column(db.DateTime)
     comments = db.Column(db.String) 
     # relationships
-    category = db.relationship('Category',back_populates='requests')
+    # category = db.relationship('Category',back_populates='requests')
     
     __table_args__ = (
         # 1->Approved, 0->Denied, -1->Pending
