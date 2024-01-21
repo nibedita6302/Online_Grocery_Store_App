@@ -46,7 +46,7 @@ class Users(db.Model, UserMixin):
     transactions = db.relationship('Transaction', lazy=True, cascade='all, delete')
     prodCreated = db.relationship('Products', backref='createdBy') # store-manager created products
     __table_args__= (
-        # 1->Denied, 0->Waiting, 1->Approved
+        # 0->Denied, -1->Waiting, 1->Approved
         db.CheckConstraint('active IN (-1,0,1)', name='user_active'),
     )
     def match_password(self, password):

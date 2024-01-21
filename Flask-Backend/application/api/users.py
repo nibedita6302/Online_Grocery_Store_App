@@ -97,7 +97,7 @@ class StoreManagerRegister(Resource):
         args = self.parser.parse_args()
         try:
             if (Users.query.filter_by(email=args['email']).first() is None):
-                sm = datastore.create_user(email=args['email'], password=hash_password(args['password']), active=0)
+                sm = datastore.create_user(email=args['email'], password=hash_password(args['password']), active=-1)
                 datastore.add_role_to_user(sm, 'store_manager')
                 db.session.add(sm)
                 db.session.commit()
@@ -124,7 +124,7 @@ class ManagerApproval(Resource):
     @roles_required('admin')
     @auth_required('token')
     def get(self):
-        data = Users.query.filter_by(active=0)
+        data = Users.query.filter_by(active=-1)
         store_manager_data = []
         for d in data:
             if d.roles[0].name=='store_manager':
