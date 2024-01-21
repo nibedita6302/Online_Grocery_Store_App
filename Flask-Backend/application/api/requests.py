@@ -71,14 +71,16 @@ class RequestConfirmation(Resource):
 class ReturnConfirmation(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('status', type=int, choices=[-1,1], help='Invalid Status')
+        self.parser.add_argument('status', type=int, choices=[0,1], help='Invalid Status')
 
     @roles_required('admin')
     @auth_required('token')
     def put(self, cn_id):
         args = self.parser.parse_args()
-        ap1 = RequestOnCategory.query.get(cn_id)
-        ap1.status = args['status']
+        r1 = RequestOnCategory.query.get(cn_id)
+        r1.status = args['status']
         db.session.commit()
-        return 200
+        if args['status']==1:
+            return {'message':'Approved Request ID: {r1.cn_id}'}, 200
+        return {'message':'Denied Request ID: {r1.cn_id}'}, 200
 

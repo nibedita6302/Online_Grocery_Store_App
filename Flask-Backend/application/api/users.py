@@ -27,9 +27,9 @@ class Login(Resource):
         args = self.parser.parse_args()
         u = Users.query.filter_by(email=args['email']).first()
         if u is not None:
-            if u.active==0 and u.roles[0].name=='store_manager':
+            if u.active==-1 and u.roles[0].name=='store_manager':
                 return {'message':'Your Registration is not yet Approved.'}, 202
-            elif u.active==-1 and u.roles[0].name=='store_manager':
+            elif u.active==0 and u.roles[0].name=='store_manager':
                 return {'message':'Your Registration has been denied.'}, 202
             if u.match_password(args['password']):
                 login_user(u)
@@ -119,7 +119,7 @@ store_manager_fields = {
 class ManagerApproval(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
-        self.parser.add_argument('approved', type=int, choices=[-1,1], help='Invalid Choice')
+        self.parser.add_argument('approved', type=int, choices=[0,1], help='Invalid Choice')
     
     @roles_required('admin')
     @auth_required('token')
@@ -139,9 +139,9 @@ class ManagerApproval(Resource):
         sm.active = args['approved']
         db.session.commit()
         if args['approved']==1:
-            return {'message': f'You approved {sm.email} as Store Manager'}, 200
+            return {'message': f'Approved - {sm.email}'}, 200
         else:
-            return {'message': f'You denied {sm.email} as Store Manager'}, 200
+            return {'message': f'Denied - {sm.email}'}, 200
     
 address_fields = { 
     'address': fields.String,
