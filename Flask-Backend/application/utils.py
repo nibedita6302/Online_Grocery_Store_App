@@ -47,9 +47,9 @@ def parseProductFromData(form):
     for i in newForm:
         if i in ['p_qty','price']:
             newForm[i]=float(newForm[i])
-        elif i in ['c_id','stock']:
+        elif i in ['c_id','stock','cn_id', 'requester']:
             newForm[i]=int(newForm[i])
-        elif i=='expieryDate':
+        elif i in ['expieryDate','last_update_date','req_date']:
             newForm[i] = datetime.strptime(newForm['expieryDate'],f'%Y-%m-%d')
     
     return newForm
