@@ -29,10 +29,6 @@ class RequestOnCategory(db.Model):
     req_date = db.Column(db.DateTime, nullable=False)
     #filled by admin
     status = db.Column(db.Integer, default=-1, nullable=False) 
-    last_update_date = db.Column(db.DateTime)
-    comments = db.Column(db.String) 
-    # relationships
-    # category = db.relationship('Category',back_populates='requests')
     
     __table_args__ = (
         # 1->Approved, 0->Denied, -1->Pending
@@ -43,11 +39,11 @@ class RequestOnCategory(db.Model):
     def isProperRequest(self, action, c_id, c_name, c_image):
         if action in ['PUT','DELETE']:
             if not Category.query.get(c_id):
-                print('put-delete')
+                # print('put-delete')
                 return False
         elif action in 'POST':
             if c_image == '' and c_name=='' and c_id is None:
-                print('post')
+                # print('post')
                 return False
         return True
     
@@ -56,14 +52,14 @@ class RequestOnCategory(db.Model):
         if c_id is not None:
             r1 = RequestOnCategory.query.filter_by(action=action, c_id=c_id, status=1).first() #accepted
             r_1 = RequestOnCategory.query.filter_by(action=action, c_id=c_id, status=-1).first() #pending
-            print(r1,r_1)
+            # print(r1,r_1)
             return (r1 is not None) and (r_1 is not None) #not accepted or pending
         elif c_name!='' and c_image!='':
             r1 = RequestOnCategory.query.filter_by(action=action, c_name=c_name, #accepted
                                               c_image=c_image, status=1).first() 
             r_1 = RequestOnCategory.query.filter_by(action=action, c_name=c_name, #pending
                                               c_image=c_image, status=-1).first()
-            print(r1,r_1,'next')
+            # print(r1,r_1,'next')
             return (r1 is not None) and (r_1 is not None) #not accepted or pending
         # duplicate
         return True

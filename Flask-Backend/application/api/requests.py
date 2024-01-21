@@ -1,8 +1,6 @@
 import os
 from datetime import datetime
 from application.data.models.requests import *
-from application.data.models.users import Users
-from application.data.models.users import Logs
 from flask_restful import Resource, fields, marshal, reqparse
 from application.data.database import db
 from flask import current_app as app
@@ -18,9 +16,7 @@ request_fields = {
     "c_name": fields.String,
     "c_image": fields.String,
     "req_date": fields.String,  
-    "status": fields.Integer,
-    "last_update_date": fields.String,
-    "comments": fields.String
+    "status": fields.Integer
 }
 
 class RequestConfirmation(Resource):
@@ -31,7 +27,6 @@ class RequestConfirmation(Resource):
         if current_user.roles[0].name=='admin':
             request_data = RequestOnCategory.query.filter_by(status=-1)\
                                             .order_by(RequestOnCategory.req_date.desc()).all()
-            print(request_data)
         else:
             request_data = RequestOnCategory.query.filter_by(requester=current_user.id).all()
         if request_data==[]:
@@ -77,16 +72,13 @@ class ReturnConfirmation(Resource):
     def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('status', type=int, choices=[-1,1], help='Invalid Status')
-        self.parser.add_argument('comment', type=str)
 
     @roles_required('admin')
     @auth_required('token')
     def put(self, cn_id):
         args = self.parser.parse_args()
         ap1 = RequestOnCategory.query.get(cn_id)
-        ap1.comment = args['comment']
         ap1.status = args['status']
-        ap1.last_update_date = datetime.now()
         db.session.commit()
         return 200
 
