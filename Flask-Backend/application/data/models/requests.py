@@ -7,6 +7,7 @@ class RequestOnCategory(db.Model):
     def __init__(self, action, requester, req_date, c_id=None, c_name='', c_image=''):
         if self.isProperRequest(action, c_id, c_name, c_image):
             if self.isDuplicateRequest(action, c_id, c_name, c_image):
+                print('in')
                 raise ValueError("Request already exists")
         else:
             raise ValueError("Invalid Request")
@@ -52,15 +53,15 @@ class RequestOnCategory(db.Model):
         if c_id is not None:
             r1 = RequestOnCategory.query.filter_by(action=action, c_id=c_id, status=1).first() #accepted
             r_1 = RequestOnCategory.query.filter_by(action=action, c_id=c_id, status=-1).first() #pending
-            # print(r1,r_1)
-            return (r1 is not None) and (r_1 is not None) #not accepted or pending
-        elif c_name!='' and c_image!='':
+            print(r1,r_1,'c_id')
+            return (r1 is not None) or (r_1 is not None) #not accepted or pending
+        elif c_name!='' :
             r1 = RequestOnCategory.query.filter_by(action=action, c_name=c_name, #accepted
-                                              c_image=c_image, status=1).first() 
+                                                                    status=1).first() 
             r_1 = RequestOnCategory.query.filter_by(action=action, c_name=c_name, #pending
-                                              c_image=c_image, status=-1).first()
-            # print(r1,r_1,'next')
-            return (r1 is not None) and (r_1 is not None) #not accepted or pending
+                                                                    status=-1).first()
+            print(r1,r_1,'next')
+            return (r1 is not None) or (r_1 is not None) #not accepted or pending
         # duplicate
         return True
             

@@ -38,12 +38,15 @@ class RequestConfirmation(Resource):
     def post(self):
         try:
             formData = request.form.to_dict()
-            # print(formData)
+            print(formData)
+            if len(formData.keys())<=1:
+                raise ValueError('All fields are compulsory')
             if (formData['action'] in ['POST','PUT']) and (not formData['c_name'].isalnum()):
                 return {'message':'Category name must be of only one word'}, 202
             d = datetime.now()
             img_path = None
             if 'c_image' in request.files:
+                # print('in')
                 image = request.files['c_image']
                 folder = app.config['UPLOAD_FOLDER']+'pendingUpload/'
                 count = len(os.listdir(folder))
@@ -81,6 +84,8 @@ class ReturnConfirmation(Resource):
         r1.status = args['status']
         db.session.commit()
         if args['status']==1:
-            return {'message':'Approved Request ID: {r1.cn_id}'}, 200
-        return {'message':'Denied Request ID: {r1.cn_id}'}, 200
+            # print('in')
+            return {'message':'Approved Request ID:'+str(r1.cn_id)}, 200
+        # print('here')
+        return {'message':'Denied Request ID:'+str(r1.cn_id)}, 200
 
