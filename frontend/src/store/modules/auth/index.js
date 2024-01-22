@@ -8,6 +8,9 @@ export default ({
     };
   },
   getters: {
+    GET_USER_ID(state){
+      return state.id
+    },
     GET_USER_ROLE(state){
       return state.role
     },

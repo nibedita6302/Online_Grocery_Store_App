@@ -21,6 +21,9 @@
                         <router-link to="/show-products" 
                         class="text-white text-decoration-none">{{ c.c_name }}</router-link>
                     </h3>
+                    <p class="card-body" v-if="this.allowCRUD()">
+                        ID: {{ c.c_id }}
+                    </p>
                 </div>
                 <div v-show="this.GET_USER_ROLE=='admin'" class="card-footer text-center">
                     <button type="submit" class="btn btn-warning me-2" 

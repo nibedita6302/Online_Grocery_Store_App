@@ -24,7 +24,7 @@
             active-class="active" class="nav-link">Profile</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
+            <router-link to='/requests' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
              active-class="active" class="nav-link">Requests </router-link>
           </li>
           <li class="nav-item">
