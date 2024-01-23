@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, Blueprint
+from flask import Flask, Blueprint
 from flask_restful import Api
 from flask_cors import CORS
 from application import config
@@ -7,7 +7,7 @@ from application.config import LocalDevelopmentConfig, StageConfig
 from application.data.database import db
 from flask_security import Security
 from application.sec import datastore
-#from application.jobs import workers
+from application.jobs import workers
 #from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_login import LoginManager
 from flask_security import utils
@@ -57,27 +57,27 @@ def create_app():
     CORS(app, supports_credentials=True)
     
     # Create celery   
-    #celery = workers.celery
+    celery = workers.celery
 
     # Update with configuration
-    #celery.conf.update(
-    #    broker_url = app.config["CELERY_BROKER_URL"],
-    #    result_backend = app.config["CELERY_RESULT_BACKEND"]
-    #)
+    celery.conf.update(
+       broker_url = app.config["CELERY_BROKER_URL"],
+       result_backend = app.config["CELERY_RESULT_BACKEND"]
+    )
+    celery.Task = workers.ContextTask
 
-    #celery.Task = workers.ContextTask
     #app.app_context().push()
     #cache = Cache(app)
     #app.app_context().push()
     #print("Create app complete")
     #return app, api, celery, cache
 
-    return app, api
+    return app, api, celery
 
 login_manager = LoginManager()
 
 #app, api, celery, cache = create_app()
-app ,api = create_app()
+app ,api, celery = create_app()
 
 # import models in main
 from application.data.models.users import *
