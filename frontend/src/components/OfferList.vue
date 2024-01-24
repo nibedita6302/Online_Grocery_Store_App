@@ -67,7 +67,7 @@
                         <p class="card-text"> {{ offer.description }} </p>
                     </div>
                     <div class="card-footer">
-                        <div v-if="this.GET_USER_ROLE=='customer'">
+                        <div v-if="this.GET_USER_ROLE=='customer' && offer.o_id!==1">
                             <button type="submit" class="btn btn-outline-dark me-2" 
                             data-bs-toggle="modal" data-bs-target="#Confirm"
                             @click="()=>{this.store_offer_id=offer.o_id}">
