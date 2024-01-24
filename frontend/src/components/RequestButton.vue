@@ -51,7 +51,7 @@
             </div>
             <div v-if="this.action=='POST'|| this.action=='PUT'">
                 <label for="c_image">Category Image: </label>
-                <input id="c_image" type="file" >
+                <input id="c_image" type="file" accept="image/*">
             </div><br>
             <button type="submit" class="btn btn-outline-dark"
             data-bs-toggle="modal" data-bs-target="#requestForm">

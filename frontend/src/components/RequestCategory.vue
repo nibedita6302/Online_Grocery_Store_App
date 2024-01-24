@@ -1,6 +1,7 @@
 <template>
     <!-- ALERT MESSAGE GIVING ERROR! -->
     <h2>Request On Category</h2>
+    <p :class="msg_type">{{ this.msg }}</p>
     <table class="table text-center">
     <thead>
         <tr>
@@ -55,7 +56,8 @@ export default {
     data(){
         return {
             requests: [],
-            msg: ''
+            msg: '',
+            msg_type: 'text-success'
         }
     },
     components:{
@@ -94,27 +96,32 @@ export default {
             }).catch((error)=>{console.log(error);})
         },
         async returnRequest(status, cn_id){
-            await fetch('http://10.0.2.15:8000/api/admin/requests/'+
-                        cn_id+'?auth_token='+this.GET_USER_TOKEN, {
-                method: 'PUT',
-                mode: 'cors',
-                body: JSON.stringify({
-                    status: status
-                }),
-                headers: {
-                    'Content-Type':'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                credentials: 'include'
-            }).then((res)=>{
+            try{
+                const res = await fetch('http://10.0.2.15:8000/api/admin/requests/'+
+                            cn_id+'?auth_token='+this.GET_USER_TOKEN, {
+                    method: 'PUT',
+                    mode: 'cors',
+                    body: JSON.stringify({
+                        status: status
+                    }),
+                    headers: {
+                        'Content-Type':'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    credentials: 'include'
+                })    
+                if (res.status==202){
+                    this.msg_type='text-danger'
+                }else if (res.status==200){
+                    this.msg_type='text-success'
+                }
                 if (!res.ok){ throw Error('HTTP Error at Return requests:'+res.status); }
-                return res.json()
-            }).then((data)=>{
+                const data = await res.json()
                 console.log(data)
                 if (data!==null) {this.msg = data.message;}
-                this.getRequests()
+                await this.getRequests()
                 // console.log('here')
-            }).catch((error)=>{console.log(error);})
+            }catch(error){console.log(error);}
         }
     },
     computed: {
@@ -127,7 +134,7 @@ export default {
 </script>
 
 <style scoped>
-    h2{
+    h2,p{
         text-align: center;
     }
 </style>
