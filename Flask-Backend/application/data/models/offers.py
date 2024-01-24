@@ -41,7 +41,7 @@ class CustomerOffers(db.Model):
     def set_use_count(self):
         offer = Offers.query.get(self.o_id)
         self.use_count=offer.use_count
-    
+"""     
 class CategoryOffers(db.Model):
     __tablename__ = 'category_offers'
     o_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -52,3 +52,4 @@ class CategoryOffers(db.Model):
     
     def apply_discount(self, price):
         return price*self.discount/100
+"""

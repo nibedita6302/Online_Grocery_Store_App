@@ -7,12 +7,14 @@ from flask_restful import fields, marshal
 from flask_restful import reqparse
 from application.data.database import db
 from flask_login import  login_required, current_user
-from flask_security import roles_required
+from flask_security import roles_required, auth_required
 
 offer_fields = {
+    'o_id': fields.Integer,
     'o_name': fields.String,
     'description': fields.String,
     'discount': fields.Integer,
+    'use_count': fields.Integer,
     'price': fields.Float
 }
 
@@ -26,11 +28,11 @@ class CustomerOfferCRUD(Resource):
         self.parser.add_argument('price', type=float)
     
     def get(self):
-        offer_data = Offers.query.filter_by(is_active=True).all()
-        return marshal(offer_data[1:], offer_fields), 200
+        offer_data = Offers.query.filter_by(is_active=1).all()
+        return marshal(offer_data, offer_fields), 200
     
-    @roles_required('store_manager')
-    @login_required
+    @roles_required('admin')
+    @auth_required('token')
     def post(self):
         try:
             args = self.parser.parse_args()
@@ -52,17 +54,17 @@ class CustomerOfferCRUD(Resource):
                 return Exception(e)
     
     @roles_required('customer')   # customer buying offer
-    @login_required
-    def put(self, user_id, o_id):
+    @auth_required('token')
+    def put(self, o_id):
         offer = Offers.query.filter_by(o_id=o_id).first()
-        cust_offer = CustomerOffers(user_id=user_id, o_id=o_id)
+        cust_offer = CustomerOffers(user_id=current_user.id, o_id=o_id)
         cust_offer.set_use_count()
         db.session.add(cust_offer)  
         db.session.commit()
         return {'message':'The offer has been added to your account'}, 200
 
     @roles_required('admin')
-    @login_required
+    @auth_required('token')
     def delete(self, o_id):
         # inactive the offer
         offer = Offers.query.get(o_id)
@@ -73,7 +75,8 @@ class CustomerOfferCRUD(Resource):
         db.session.add(log)
         db.session.commit()
         return {'message':f'Offer {o_id} has been deactivated'}, 200
-
+    
+"""
 category_offer_fields = {
     'o_name': fields.String,
     'description': fields.String,
@@ -83,6 +86,7 @@ category_offer_fields = {
 category_fields = {
     'c_id': fields.Integer
 }
+
 
 class CategoryOfferCRUD(Resource):
     def __init__(self):
@@ -137,3 +141,4 @@ class CategoryOfferCRUD(Resource):
         db.session.add(log)
         db.session.commit()
         return {'message':f'Offer {o_id} has been deleted'}, 200
+"""
