@@ -25,9 +25,13 @@ class Offers(db.Model):
     o_name = db.Column(db.String, unique=True, nullable=False)
     description = db.Column(db.String, nullable=False)
     discount = db.Column(db.Integer)
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Integer, default=True)
     use_count = db.Column(db.Integer) 
     price = db.Column(db.Float, nullable=False)
+    __table_args__ = (
+        # 1->Active, 0->Inactive
+        db.CheckConstraint('is_active IN (1,0)', name='offer_is_active'),
+    )
 
     def apply_discount(self, total_price):
         return total_price*self.discount/100

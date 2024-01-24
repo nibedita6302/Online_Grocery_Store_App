@@ -2,6 +2,7 @@ from datetime import datetime
 from application.data.models.offers import *
 from application.data.models.users import Logs, Users
 from application.data.models.inventory import Category
+from flask import request
 from flask_restful import Resource
 from flask_restful import fields, marshal
 from flask_restful import reqparse
@@ -19,13 +20,13 @@ offer_fields = {
 }
 
 class CustomerOfferCRUD(Resource):
-    def __init__(self):
+    """ def __init__(self):
         self.parser = reqparse.RequestParser()
         self.parser.add_argument('o_name', type=str)
         self.parser.add_argument('description', type=str)
         self.parser.add_argument('discount', type=int)
         self.parser.add_argument('use_count', type=int)
-        self.parser.add_argument('price', type=float)
+        self.parser.add_argument('price', type=float) """
     
     def get(self):
         offer_data = Offers.query.filter_by(is_active=1).all()
@@ -35,8 +36,8 @@ class CustomerOfferCRUD(Resource):
     @auth_required('token')
     def post(self):
         try:
-            args = self.parser.parse_args()
-            offer = Offers(**args)
+            form = request.form.to_dict()
+            offer = Offers(**form)
             db.session.add(offer)
             db.session.commit()
             # add to logs
@@ -56,19 +57,23 @@ class CustomerOfferCRUD(Resource):
     @roles_required('customer')   # customer buying offer
     @auth_required('token')
     def put(self, o_id):
-        offer = Offers.query.filter_by(o_id=o_id).first()
-        cust_offer = CustomerOffers(user_id=current_user.id, o_id=o_id)
-        cust_offer.set_use_count()
-        db.session.add(cust_offer)  
-        db.session.commit()
-        return {'message':'The offer has been added to your account'}, 200
+        is_co = CustomerOffers.query.filter_by(o_id=o_id, user_id=current_user.id).first()
+        if is_co is None:
+            cust_offer = CustomerOffers(user_id=current_user.id, o_id=o_id)
+            cust_offer.set_use_count()
+            db.session.add(cust_offer)  
+            db.session.commit()
+            return {'message':'Payment of Successful! Offer added to account.'}, 200
+        return {'message':'The offer already bought'}, 202
 
     @roles_required('admin')
     @auth_required('token')
     def delete(self, o_id):
         # inactive the offer
+        if o_id==1:
+            return {'message':'Offer ID: 1 is a default offer, Cannot be deleted!'}, 202
         offer = Offers.query.get(o_id)
-        offer.is_active=False
+        offer.is_active=0
         # add to logs
         log = Logs(user_id=current_user.id, action='DELETE', table_name=offer.__tablename__, 
                    action_on=offer.o_id, date=datetime.now(), is_admin=1)
