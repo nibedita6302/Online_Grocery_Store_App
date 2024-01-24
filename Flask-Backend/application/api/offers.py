@@ -7,6 +7,7 @@ from flask_restful import Resource
 from flask_restful import fields, marshal
 from flask_restful import reqparse
 from application.data.database import db
+from application.redis_cache import cache
 from flask_login import  login_required, current_user
 from flask_security import roles_required, auth_required
 
@@ -20,14 +21,8 @@ offer_fields = {
 }
 
 class CustomerOfferCRUD(Resource):
-    """ def __init__(self):
-        self.parser = reqparse.RequestParser()
-        self.parser.add_argument('o_name', type=str)
-        self.parser.add_argument('description', type=str)
-        self.parser.add_argument('discount', type=int)
-        self.parser.add_argument('use_count', type=int)
-        self.parser.add_argument('price', type=float) """
     
+    @cache.cached()
     def get(self):
         offer_data = Offers.query.filter_by(is_active=1).all()
         return marshal(offer_data, offer_fields), 200

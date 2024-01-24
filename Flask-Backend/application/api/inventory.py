@@ -6,6 +6,7 @@ from application.data.models.users import Logs
 from application.utils import parseProductFromData
 from flask_restful import Resource, fields, marshal, reqparse
 from application.data.database import db
+from application.redis_cache import cache
 from flask import abort, request
 from flask import current_app as app
 from flask_login import login_required, current_user
@@ -43,7 +44,8 @@ class ProductCRUD(Resource):
         self.parser.add_argument('p_image', type=str)
         self.parser.add_argument('expieryDate', type=str)
         self.parser.add_argument('c_id', type=int)
-    
+     
+    @cache.cached()
     def get(self, p_id):
         product_data = Products.query.get(p_id)
         return marshal(product_data, product_fields),  200
@@ -144,6 +146,7 @@ class ProductCRUD(Resource):
         return {'message':f'Product (p_id:{p_id}) deletion confirmed.'}, 200
 
 class ProductCategoryView(Resource): #all products under a category
+    @cache.cached()
     def get(self, c_id):
         product_data = Products.query.filter_by(c_id=c_id, is_deleted=0).all()
         return marshal(product_data, product_fields),  200
@@ -171,6 +174,7 @@ class CategoryCRUD(Resource):
         self.parser.add_argument('o_id', type=int)
         self.parser.add_argument('c_image', type=str)
     
+    @cache.cached()
     def get(self):
         category_data = Category.query.all()
         return marshal(category_data,category_fields),  200
@@ -276,6 +280,7 @@ class ReviewCRUD(Resource):
         self.parser.add_argument('review', type=str)
         self.parser.add_argument('rating', type=int)
     
+    @cache.cached()
     def get(self, p_id):
         review_data = db.session.query(Review.review, Review.rating, Users.email)\
                                 .join(Review, Review.user_id==Users.id).filter_by(p_id=p_id).all()

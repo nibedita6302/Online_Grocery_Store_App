@@ -12,7 +12,7 @@ from application.jobs import workers
 from flask_login import LoginManager
 from flask_security import utils
 #from flask_sse import sse
-#from flask_caching import Cache
+from application.redis_cache import get_cache
 
 # import logging
 # logging.basicConfig(filename='debug.log', level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
@@ -68,17 +68,17 @@ def create_app():
     app.app_context().push()
     print('Celery Initiated...')
 
-    #cache = Cache(app)
-    #app.app_context().push()
-    #print("Create app complete")
-    #return app, api, celery, cache
-
+    # setting up Cache
+    cache = get_cache()
+    cache.init_app(app)
+    app.app_context().push()
+    print('Cache Setup...')
+    print("Create app complete")
     return app, api, celery
 
 login_manager = LoginManager()
 
-#app, api, celery, cache = create_app()
-app ,api, celery = create_app()
+app ,api, celery= create_app()
 
 # import models in main
 from application.data.models.users import *
