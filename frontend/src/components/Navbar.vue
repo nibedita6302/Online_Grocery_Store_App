@@ -13,15 +13,19 @@
               Home</router-link>  
           </li>
           <li class="nav-item">
-            <router-link to='#' active-class="active" class="nav-link">Offers</router-link>
+            <router-link to='/offers' active-class="active" class="nav-link">Offers</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
+            <router-link to='/my-cart' v-if="this.GET_USER_ROLE=='customer'" 
             active-class="active" class="nav-link">My Cart</router-link>
           </li>
           <li class="nav-item">
             <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
             active-class="active" class="nav-link">Profile</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
+            active-class="active" class="nav-link">Orders</router-link>
           </li>
           <li class="nav-item">
             <router-link to='/requests' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
