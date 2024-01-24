@@ -128,8 +128,8 @@ api.add_resource(RequestConfirmation, '/requests', '/requests/create')
 api.add_resource(ReturnConfirmation, '/admin/requests/<int:cn_id>')
 
 from application.api.shopping import MyCartCRUD, TransactionConfirm, PlaceOrder
-api.add_resource(MyCartCRUD, '/customer/<int:user_id>/mycart', '/customer/<int:user_id>/mycart/delete/<int:p_id>',
-      '/customer/<int:user_id>/mycart/update/<int:p_id>', '/customer/<int:user_id>/add/product/<int:p_id>')
+api.add_resource(MyCartCRUD, '/customer/<int:user_id>/mycart', '/customer/mycart/delete/<int:p_id>',
+      '/customer/mycart/update/<int:p_id>', '/customer/<int:user_id>/add/product/<int:p_id>')
 api.add_resource(TransactionConfirm, '/customer/<int:user_id>/transaction', 
                  '/customer/<int:user_id>/transaction/add')
 api.add_resource(PlaceOrder, '/customer/<int:user_id>/place-order')
