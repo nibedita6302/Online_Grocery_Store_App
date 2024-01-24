@@ -17,8 +17,6 @@ class Category(db.Model):
     c_name = db.Column(db.String, unique=True, nullable=False)
     product_count = db.Column(db.Integer, default=0, nullable=False)
     c_image = db.Column(db.String, unique=True, nullable=False)
-    #category discount - applied on all products under category
-    o_id = db.Column(db.Integer, db.ForeignKey('category_offers.o_id'))
     products = db.relationship('Products', backref='categories', cascade='all, delete, delete-orphan')
 
 class Products(db.Model):
