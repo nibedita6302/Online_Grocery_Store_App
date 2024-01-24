@@ -1,28 +1,40 @@
 README 
 
-Open terminal or cmd.
-Make sure to have python or python3 and pip or pip3 installed.
+Open Linux terminal. Make sure to have python3 and pip installed. Follow the following command to 
+start the Online Grocery Store application.
 
-If on linux terminal provide following command:
+------ TERMINAL 1 ------
 $ bash local_setup.sh  ## creates environment and installs requirements 
 $ bash local_run.sh		## runs main.py
 
-If on windows cmd provide following command:
-> python3 -m venv ..project-mad1-env 
-> . .project-mad1-env\Scripts\activate
-> pip install -r requirements.txt
-> python3 main.py
+Alternatively,
+$ . .myenv/bin/activate
+$ cd Flask-Backend/
+$ python3 main.py
 
-Note: Use python, if python3 not working.
+------ TERMINAL 2 ------
+$ redis-server  # start redis server
+
+------ TERMINAL 3 ------
+$ bash local_workers.sh  # start celery worker
+
+Alternatively,
+$ . .myenv/bin/activate
+$ cd Flask-Backend/
+$ celery -A main.celery worker -l info
+
+------ TERMINAL 4 ------
+$ cd frontend/
+$ npm run serve  # start vue.js server
 
 Go to browser and search for url: 
-http://localhost:4100/customer-login for Customer login page.
+http://localhost:8000/ for Home page and explore!
 
-http://localhost:4100/admin-login for Admin login page.
-Admin Login:
-ID: 101
-Password: 123
+Admin Login Credentials:
+Email: admin.12@grocery.com
+Password: admin.12
 
-Note: There is NO html page for http://localhost:4100/ root. 
+Note:- For registering Store Managers, apply for approval through login page then, login as Admin 
+to accept the Store Manager's approval. Now you can successfully login as a Store Manager!
 
 
