@@ -44,5 +44,5 @@ class TransactionProduct(db.Model):
     p_id = db.Column(db.Integer, db.ForeignKey('products.p_id'), primary_key=True)  
     bought_qty = db.Column(db.Integer, nullable=False)
     paid = db.Column(db.Float, nullable=False)
-    is_discount = db.Column(db.Boolean, nullable=False, default=False)
+    # is_discount = db.Column(db.Boolean, nullable=False, default=False)
  
