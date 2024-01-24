@@ -132,9 +132,11 @@ class ProductCRUD(Resource):
     @auth_required('token')
     def delete(self, p_id):
         p1 = Products.query.get(p_id)
+        c1 = Category.query.get(p1.c_id)
         if (p1.creator!=current_user.id):
             return {'message':'Permission Denied!'}, 403
         p1.is_deleted = True
+        c1.product_count-=1
         log = Logs(user_id=current_user.id, action='DELETE', table_name=self.table_name,
                    action_on=p_id, date=datetime.now(), is_admin=True)
         db.session.add(log)
