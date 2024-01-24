@@ -65,8 +65,9 @@ def create_app():
        result_backend = app.config["CELERY_RESULT_BACKEND"]
     )
     celery.Task = workers.ContextTask
+    app.app_context().push()
+    print('Celery Initiated...')
 
-    #app.app_context().push()
     #cache = Cache(app)
     #app.app_context().push()
     #print("Create app complete")
@@ -133,14 +134,16 @@ api.add_resource(TransactionConfirm, '/customer/<int:user_id>/transaction',
                  '/customer/<int:user_id>/transaction/add')
 api.add_resource(PlaceOrder, '/customer/<int:user_id>/place-order')
 
-from application.api.offers import CustomerOfferCRUD, CategoryOfferCRUD
+from application.api.offers import CustomerOfferCRUD
 api.add_resource(CustomerOfferCRUD, '/offers-customer', '/offers-customer/<int:o_id>/delete',
-                '/offers-customer/create', '/customer/<int:user_id>/buy-offer/<int:o_id>')
-api.add_resource(CategoryOfferCRUD, '/offers-category', '/offers-category/add/<int:c_id>', 
-                 '/offers-category/<int:o_id>/delete')
+                '/offers-customer/create', '/customer/buy-offer/<int:o_id>')
+# api.add_resource(CategoryOfferCRUD, '/offers-category', '/offers-category/add/<int:c_id>', 
+#                  '/offers-category/<int:o_id>/delete')
 
 from application.api.search import Search
 api.add_resource(Search, '/search')
+
+from application.api.test import *
 
 if __name__ == '__main__':
   # Run the Flask app
