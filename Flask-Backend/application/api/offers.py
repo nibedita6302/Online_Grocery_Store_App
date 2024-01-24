@@ -57,14 +57,14 @@ class CustomerOfferCRUD(Resource):
     @roles_required('customer')   # customer buying offer
     @auth_required('token')
     def put(self, o_id):
-        is_co = CustomerOffers.query.filter_by(o_id=o_id, user_id=current_user.id).first()
+        is_co = CustomerOffers.query.filter_by(user_id=current_user.id).first()
         if is_co is None:
             cust_offer = CustomerOffers(user_id=current_user.id, o_id=o_id)
-            cust_offer.set_use_count()
+            cust_offer.set_use_count() 
             db.session.add(cust_offer)  
             db.session.commit()
             return {'message':'Payment of Successful! Offer added to account.'}, 200
-        return {'message':'The offer already bought'}, 202
+        return {'message':'You can avail only one offer at a time'}, 202
 
     @roles_required('admin')
     @auth_required('token')
