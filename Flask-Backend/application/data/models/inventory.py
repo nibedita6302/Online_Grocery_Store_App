@@ -34,7 +34,6 @@ class Products(db.Model):
     stock_remaining = db.Column(db.Integer, nullable=False)
     p_image = db.Column(db.String, unique=True, nullable=False)
     is_deleted = db.Column(db.Boolean, default=False, nullable=False)
-    expieryDate = db.Column(db.Date, nullable=False)
     c_id = db.Column(db.Integer, db.ForeignKey('category.c_id')) #category
     creator = db.Column(db.Integer, db.ForeignKey('users.id')) # user - created by
     reviews = db.relationship('Review', lazy=True, cascade='all, delete, delete-orphan')

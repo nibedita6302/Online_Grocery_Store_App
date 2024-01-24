@@ -57,8 +57,12 @@ class ProductCRUD(Resource):
             formData = request.form.to_dict()
             formData = parseProductFromData(formData) # validating form
             print(formData)
+            if Products.query.filter_by(**formData).first():
+                raise Exception('UNIQUE constraint failed - Duplicate POST')
+            """             
             if not formData['p_name'].isalnum():
-                return {'message':'Category name must be of only one word'}, 202
+                return {'message':'Product name must be of one word'}, 202 
+            """
             p = Products.query.order_by(Products.p_id.desc()).first()
             p1 = Products(**formData, stock_remaining=formData['stock'], creator=current_user.id)
             if 'p_image' in request.files:
@@ -67,7 +71,7 @@ class ProductCRUD(Resource):
                     extension = '.'+image.filename.split('.')[-1]
                     if p is not None: #check if this one is the first category
                         id=p.p_id+1
-                    img_path = formData['p_name'].lower()+'_'+str(id)+extension
+                    img_path = formData['p_name'].split()[0].lower()+'_'+str(id)+extension
                     print(img_path)
                     image.save(os.path.join(app.config['UPLOAD_FOLDER']+'upload/',img_path))
                     p1.p_image = img_path
@@ -87,7 +91,7 @@ class ProductCRUD(Resource):
                 return
             else:
                 print(e)
-                return {'message': 'Creation Failed! Some Error Occured.'}, 500
+                return {'message': 'Creation Failed! Some Error Occured.'}, 500 
 
     @roles_required('store_manager')
     @auth_required('token')
@@ -124,7 +128,7 @@ class ProductCRUD(Resource):
         db.session.commit()
         return 200
     
-    @roles_required('admin')
+    @roles_required('store_manager')
     @auth_required('token')
     def delete(self, p_id):
         p1 = Products.query.get(p_id)
@@ -139,7 +143,7 @@ class ProductCRUD(Resource):
 
 class ProductCategoryView(Resource): #all products under a category
     def get(self, c_id):
-        product_data = Products.query.filter_by(c_id=c_id).all()
+        product_data = Products.query.filter_by(c_id=c_id, is_deleted=0).all()
         return marshal(product_data, product_fields),  200
   
 category_fields = {
@@ -180,8 +184,8 @@ class CategoryCRUD(Resource):
             if not formData['c_name'].isalnum():
                 return {'message':'Category name must be of only one word'}, 202 
             c = Category.query.order_by(Category.c_id.desc()).first()
-            if c.c_name == formData['c_name']:
-                return 
+            if c is not None and c.c_name == formData['c_name']:
+                return {'message':'Category already exists'}, 202
             elif Category.query.filter_by(c_name=formData['c_name']).first() is not None:
                 return {'message':'Category already exists'}, 202
             c1 = Category(**formData)
@@ -245,9 +249,9 @@ class CategoryCRUD(Resource):
     
     @roles_required('admin')
     @auth_required('token')
-    def delete(self, c_id):
+    def delete(self, c_id): 
         c1 = Category.query.get(c_id)
-        print(c1.products)
+        # print(c1.products)
         for p in c1.products:
             if not p.is_deleted:
                 return {'message': f'Category has active products, CANNOT be deleted!'}
