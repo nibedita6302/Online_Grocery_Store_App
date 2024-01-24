@@ -73,7 +73,7 @@ def implementRequest():
             
         else:       #DELETE
             c1 = Category.query.get(r.c_id)
-            if c1.prodct_count>0:
+            if c1.product_count>0:
                 return 'Unable to Delete!'
             db.session.delete(c1)
             log = Logs(user_id=r.requester, action='DELETE', table_name='category',
