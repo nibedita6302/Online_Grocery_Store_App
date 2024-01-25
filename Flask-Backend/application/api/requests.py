@@ -1,9 +1,9 @@
 import os
 from datetime import datetime
-from application.data.models.requests import *
+from ..data.models.requests import *
 from flask_restful import Resource, fields, marshal, reqparse
-from application.data.database import db
-from application.data.models.inventory import Category
+from ..data.database import db
+from ..data.models.inventory import Category
 from flask import current_app as app
 from flask import request
 from flask_login import login_required, current_user

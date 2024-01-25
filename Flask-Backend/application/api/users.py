@@ -1,10 +1,10 @@
-from application.data.models.users import *
-from application.data.models.offers import CustomerOffers
-from application.data.models.shopping import MyCart
-from application.utils import hash_password
+from ..data.models.users import *
+from ..data.models.offers import CustomerOffers
+from ..data.models.shopping import MyCart
+from ..utils import hash_password
 from flask_restful import Resource, Api, fields, marshal, reqparse
-from application.data.database import db
-from application.sec import datastore
+from ..data.database import db
+from ..sec import datastore
 from flask import abort
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_security import auth_required, roles_required, auth_token_required

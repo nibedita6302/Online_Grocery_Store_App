@@ -1,13 +1,13 @@
 from datetime import datetime
-from application.data.models.offers import *
-from application.data.models.users import Logs, Users
-from application.data.models.inventory import Category
+from ..data.models.offers import *
+from ..data.models.users import Logs, Users
+from ..data.models.inventory import Category
 from flask import request
 from flask_restful import Resource
 from flask_restful import fields, marshal
 from flask_restful import reqparse
-from application.data.database import db
-from application.redis_cache import cache
+from ..data.database import db
+from ..redis_cache import cache
 from flask_login import  login_required, current_user
 from flask_security import roles_required, auth_required
 

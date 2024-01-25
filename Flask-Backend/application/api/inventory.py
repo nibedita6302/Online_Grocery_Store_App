@@ -1,12 +1,12 @@
 import os
 from datetime import datetime
-from application.data.models.inventory import *
-from application.data.models.users import Users
-from application.data.models.users import Logs
-from application.utils import parseProductFromData
+from ..data.models.inventory import *
+from ..data.models.users import Users
+from ..data.models.users import Logs
+from ..utils import parseProductFromData
 from flask_restful import Resource, fields, marshal, reqparse
-from application.data.database import db
-from application.redis_cache import cache
+from ..data.database import db
+from ..redis_cache import cache
 from flask import abort, request
 from flask import current_app as app
 from flask_login import login_required, current_user

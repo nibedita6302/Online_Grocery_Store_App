@@ -16,7 +16,7 @@ Relationships:
 - Transaction and Customer have many-to-many relationship.
 - Transaction and Products have many-to-many relationship.
 '''
-
+ 
 class MyCart(db.Model):
     __tablename__ = 'my_cart'
     cart_id = db.Column(db.Integer, autoincrement=True, primary_key=True)

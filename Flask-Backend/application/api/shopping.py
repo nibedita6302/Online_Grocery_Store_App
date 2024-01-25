@@ -1,16 +1,16 @@
 from datetime import datetime
-from application.data.default_data import SetID
-from application.data.models.shopping import *
-from application.data.models.offers import *
-from application.data.models.inventory import Products, Category
-from application.data.models.users import Users
+from ..data.default_data import SetID
+from ..data.models.shopping import *
+from ..data.models.offers import *
+from ..data.models.inventory import Products, Category
+from ..data.models.users import Users
 from flask_restful import Resource
 from flask_restful import fields, marshal
 from flask_restful import reqparse
-from application.data.database import db
+from ..data.database import db
 from flask_login import  login_required, current_user
 from flask_security import roles_required, auth_required
-
+ 
 incart_product_fields = {
     'p_id': fields.Integer(attribute='Products.p_id'),
     'p_name': fields.String(attribute='Products.p_name'),
@@ -80,9 +80,9 @@ class MyCartCRUD(Resource):
 
 transaction_fields = {
     'p_name': fields.String,
+    'brand': fields.String,
     'bought_qty': fields.Integer,
-    'paid': fields.Float,
-    'is_discount': fields.Boolean
+    'paid': fields.Float
 }
 
 class TransactionConfirm(Resource):
@@ -93,7 +93,7 @@ class TransactionConfirm(Resource):
         result = []
         for t in trans:
             transaction_data = db.session.query(TransactionProduct.bought_qty, TransactionProduct.paid,
-                                TransactionProduct.is_discount, Products.p_name)\
+                                 Products.p_name, Products.brand)\
                                 .join(TransactionProduct, TransactionProduct.p_id==Products.p_id)\
                                 .filter(TransactionProduct.t_id==t.t_id).all()
             print(transaction_data)

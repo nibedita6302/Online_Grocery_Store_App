@@ -2,11 +2,11 @@ import os
 import shutil
 from datetime import datetime
 from flask import current_app as app
-from application.jobs.workers import celery
-from application.data.database import db
-from application.data.models.inventory import Category
-from application.data.models.users import Logs
-from application.data.models.requests import RequestOnCategory
+from ...jobs.workers import celery
+from ...data.database import db
+from ...data.models.inventory import Category
+from ...data.models.users import Logs
+from ...data.models.requests import RequestOnCategory
 from celery.schedules import crontab
 print('crontab',crontab)
 

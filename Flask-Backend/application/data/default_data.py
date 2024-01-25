@@ -2,8 +2,8 @@ from .database import db
 from .models.users import *
 from .models.shopping import Transaction
 from .models.offers import Offers, CustomerOffers
-from application.utils import check_password, hash_password
-from application.sec import datastore
+from ..utils import check_password, hash_password
+from ..sec import datastore
 
 def create_first():
     # create roles

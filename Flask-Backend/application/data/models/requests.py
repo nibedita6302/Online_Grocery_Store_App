@@ -1,5 +1,5 @@
 from ..database import db 
-from ..models.inventory import Category 
+from .inventory import Category 
 
 class RequestOnCategory(db.Model):
     __tablename__='request_on_category'

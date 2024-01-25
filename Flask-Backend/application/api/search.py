@@ -1,8 +1,8 @@
-from application.utils import *
+from ..utils import *
 from flask_restful import Resource
 from flask_restful import fields, marshal
 from flask_restful import reqparse
-from application.data.database import db
+from ..data.database import db
 from flask_login import  login_required, current_user
 
 product_fields = {

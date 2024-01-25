@@ -1,6 +1,6 @@
 from ..database import db 
 from flask_security import UserMixin, RoleMixin
-from application.utils import check_password
+from ...utils import check_password
 
 '''
 This is users.py file from MODELS. This includes models for all users which includes
