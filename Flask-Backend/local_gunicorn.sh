@@ -15,5 +15,5 @@ fi
 # Activate virtual env
 . ../.myenv/bin/activate
 export ENV=stage
-gunicorn main:app --worker-class gevent --bind 127.0.0.1:8000 --workers=4
+gunicorn main:app --worker-class gevent --bind 0.0.0.0:8000 --workers=2
 deactivate

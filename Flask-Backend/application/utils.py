@@ -57,3 +57,21 @@ def parseProductFromData(form):
 def is_alphanum_space(str):
     pattern = compile(r'[a-zA-Z0-9 ]*$')
     return pattern.match(str) is not None
+
+
+def getCategorySale():
+    data = {}
+    category = Category.query.all()
+    for c in category:
+        prod = c.products
+        if prod!=[]:
+            total_sales = 0
+            for p in prod:
+                total_sales+=(p.stock-p.stock_remaining)*p.price
+        data[c.c_name]=total_sales
+    return data
+
+def getPopularProduct():
+    prod = Products.query.filter(Products.stock_remaining<Products.stock)\
+            .order_by(Products.stock - Products.stock_remaining).all()
+    return prod

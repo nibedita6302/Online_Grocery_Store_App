@@ -2,7 +2,8 @@ from celery import Celery
 from flask import current_app as app
 
 celery = Celery('Online Grocery App Jobs',
-                include=['application.jobs.task.requestCategory'])
+                include=['application.jobs.task.requestCategory', 
+                         'application.jobs.task.sendEmail'])
 
 # Create a subclass of the task 
 # that wraps the task execution in an application context.
