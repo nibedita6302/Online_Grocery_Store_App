@@ -116,10 +116,9 @@ from application.api.users import Login, Logout
 api.add_resource(Login, "/login")
 api.add_resource(Logout, "/logout")
 
-from application.api.users import CustomerRegister, StoreManagerRegister, AddressCRUD
+from application.api.users import CustomerRegister, StoreManagerRegister
 api.add_resource(CustomerRegister, "/customer/register")
 api.add_resource(StoreManagerRegister, '/store-manager/register')
-api.add_resource(AddressCRUD, '/customer/<int:user_id>/address')
 
 from application.api.users import ManagerApproval
 api.add_resource(ManagerApproval,'/admin/store-manager-approvals','/admin/store-manager-approvals/<int:id>')
@@ -153,7 +152,6 @@ api.add_resource(CustomerOfferCRUD, '/offers-customer', '/offers-customer/<int:o
 from application.api.search import Search
 api.add_resource(Search, '/search')
 
-from application.api.test import *
 
 if __name__ == '__main__':
   # Run the Flask app

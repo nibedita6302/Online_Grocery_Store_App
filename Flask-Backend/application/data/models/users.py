@@ -41,7 +41,6 @@ class Users(db.Model, UserMixin):
     fs_uniquifier = db.Column(db.String(255), unique=True) 
     #relationships
     roles = db.relationship('Role', secondary=RoleUsers, backref='assignedTo', cascade='all, delete')
-    addresses = db.relationship('Address', lazy=True, cascade='all, delete')
     reviews = db.relationship('Review', cascade='all, delete')
     transactions = db.relationship('Transaction', lazy=True, cascade='all, delete')
     prodCreated = db.relationship('Products', backref='createdBy') # store-manager created products
@@ -51,13 +50,6 @@ class Users(db.Model, UserMixin):
     )
     def match_password(self, password):
         return  check_password(password, self.password)
-
-class Address(db.Model):
-    __tablename__ = 'address'
-    a_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    address = db.Column(db.String, nullable=False)
-    pincode = db.Column(db.String(7), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id')) #users
 
 class Logs(db.Model):
     __tablename__ = 'logs'

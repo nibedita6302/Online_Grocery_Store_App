@@ -24,7 +24,7 @@ def pieChart(data, title):
     plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
     plt.axis('equal')
     plt.title(title)
-    count = os.listdir('./PDF_Report/')
+    count = len(os.listdir('./PDF_Report/'))
     piename = f'./PDF_Report/pie_{count}.png'
     plt.savefig(piename)
     return piename

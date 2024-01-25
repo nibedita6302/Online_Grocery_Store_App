@@ -1,11 +1,12 @@
 import os
 import shutil
+import csv
 from datetime import datetime, date
 from flask import current_app as app
 from .workers import celery
 from ..data.database import db
 from .setupEmail import sendEmail 
-from ..data.models.inventory import Category
+from ..data.models.inventory import Category, Products
 from ..data.models.shopping import Transaction
 from ..data.models.users import Users
 from ..data.models.users import Logs
@@ -24,12 +25,6 @@ def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(crontab(30, 21, day_of_month='25'), 
             send_monthly_report.s(), name='Send Monthly Report to Admin at on 25th\
                                              of every month at 4pm')
-
-@celery.task()
-def test():
-    return 'Test Run Successfull!'
-
-
 @celery.task()
 def send_customer_reminder():
     # send daily customer reminder is no activity
@@ -53,7 +48,37 @@ def send_monthly_report():
 @celery.task()
 def download_product_csv():
     # download products csv for store manager 
-    return 'message'
+    prod = Products.query.all()
+    data = [{
+        'p_id': p.p_id,
+        'p_name': p.p_name,
+        'p_description' : p.p_description,
+        'brand': p.brand,
+        'p_qty' : p.p_qty,
+        'unit': p.unit,
+        'price' : p.price,
+        'stock' : p.stock,
+        'stock_remaining' : p.stock_remaining,
+        'is_deleted': p.is_deleted,
+        'c_id' : p.c_id,
+        'creator': p.creator
+    } for p in prod]
+
+     # Define CSV file path
+    count = len(os.listdir('./PDF_Report/'))
+    csv_file_path = f'product_{count}.csv'
+
+    # Write data to CSV file
+    with open(csv_file_path, 'w', newline='') as csvfile:
+        fieldnames = ['p_id', 'p_name', 'p_description', 'brand', 'p_qty', 'unit', 'price', 'stock',
+                      'stock_remaining', 'is_deleted', 'c_id', 'creator']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for row in data:
+            writer.writerow(row)
+
+    return csv_file_path
 
 @celery.task()
 def implementRequest():

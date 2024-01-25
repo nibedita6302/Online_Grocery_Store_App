@@ -76,7 +76,7 @@ def create_pdf(file_path):
 
     # Build the PDF document
     doc.build(elements)
-    count = os.listdir('./PDF_Report/')
+    count = len(os.listdir('./PDF_Report/'))
     output_file = f"./PDF_Report/pdf_{count}.pdf"
     create_pdf(output_file)
     print(f"PDF created successfully: {output_file}")
