@@ -24,7 +24,6 @@ product_fields = {
     'stock_remaining' : fields.Integer,
     'p_image': fields.String,
     'is_deleted': fields.Float,
-    'expieryDate' : fields.String,
     'c_id' : fields.Integer,
     'creator': fields.Integer
 }
@@ -291,12 +290,14 @@ class ReviewCRUD(Resource):
     def post(self, p_id):
         try:
             args = self.parser.parse_args()
+            if args['review']=='' or args['rating'] not in [1,2,3,4,5]:
+                return {'message':'Invalid or incomplete Review!'}
             r1 = Review(**args, user_id=current_user.id, p_id=p_id)
             db.session.add(r1)
             db.session.commit()
             return 200
         except Exception as e:
-            if ('UNIQUE constraint failed' in str(e.args[0])):
+            if ('UNIQUE constraint failed' in str(e)):
                 print('UNIQUE constraint error ignored!')
                 return
             else:

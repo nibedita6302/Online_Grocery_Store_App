@@ -36,7 +36,7 @@ class LocalDevelopmentConfig(Config):
     CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
     REDIS_URL = "redis://localhost:6379"
     CACHE_TYPE = "RedisCache"
-    CACHE_DEFAULT_TIMEOUT = 300
+    CACHE_DEFAULT_TIMEOUT = 30
     CACHE_REDIS_HOST = "localhost"
     CACHE_REDIS_PORT = 6379
     CACHE_REDIS_DB = 9    
@@ -58,7 +58,7 @@ class StageConfig(Config):
     CELERY_RESULT_BACKEND = "redis://localhost:6379/2"
     REDIS_URL = "redis://localhost:6379"
     CACHE_TYPE = "RedisCache"
-    CACHE_DEFAULT_TIMEOUT = 300
+    CACHE_DEFAULT_TIMEOUT = 30
     CACHE_REDIS_HOST = "localhost"
     CACHE_REDIS_PORT = 6379
     CACHE_REDIS_DB = 9    

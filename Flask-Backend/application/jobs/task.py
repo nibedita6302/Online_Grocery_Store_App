@@ -1,23 +1,59 @@
 import os
 import shutil
-from datetime import datetime
+from datetime import datetime, date
 from flask import current_app as app
-from ...jobs.workers import celery
-from ...data.database import db
-from ...data.models.inventory import Category
-from ...data.models.users import Logs
-from ...data.models.requests import RequestOnCategory
+from .workers import celery
+from ..data.database import db
+from .setupEmail import sendEmail 
+from ..data.models.inventory import Category
+from ..data.models.shopping import Transaction
+from ..data.models.users import Users
+from ..data.models.users import Logs
+from ..data.models.requests import RequestOnCategory
 from celery.schedules import crontab
-# print('crontab',crontab)
+print('crontab',crontab)
 
-@celery.on_after_finalize.connect
+@celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/5'), 
+    sender.add_periodic_task(crontab(minute='*/15'), 
             implementRequest.s(), name='Implement Category Requests Every 5 minutes')
+    
+    sender.add_periodic_task(crontab(minute=30, hour=21), 
+            send_customer_reminder.s(), name='Send Customer Reminder everyday at 4pm')
+    
+    sender.add_periodic_task(crontab(30, 21, day_of_month='25'), 
+            send_monthly_report.s(), name='Send Monthly Report to Admin at on 25th\
+                                             of every month at 4pm')
 
 @celery.task()
 def test():
     return 'Test Run Successfull!'
+
+
+@celery.task()
+def send_customer_reminder():
+    # send daily customer reminder is no activity
+    trans = Transaction.query.all()
+    print(trans)
+    for t in trans:
+        if datetime.strptime(t.bought_date, "%Y-%m-%\d %H:%M:%S.%/f").date() == date.today():
+            print(t.user_id, t.bought_date) 
+            user = Users.query.get(t.user_id)
+            sendEmail(reciever_email=user.email)
+    return 'All emails sent'
+
+
+@celery.task()
+def send_monthly_report():
+    # send monthly report to admin
+    sendEmail(receiver_email='nibedita.6302@gmail.com', email_type='report')
+    return 'Monthly Report Communicated!'
+
+
+@celery.task()
+def download_product_csv():
+    # download products csv for store manager 
+    return 'message'
 
 @celery.task()
 def implementRequest():
