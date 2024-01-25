@@ -11,9 +11,9 @@ def create_first():
     datastore.find_or_create_role(id=2, name='store_manager', description='CRUD on Products Only.')
     datastore.find_or_create_role(id=3, name='customer', description='Read inventory data & CRUD on MyCart')
     db.session.commit()  
-    if not datastore.find_user(email='admin@grocery.com'):
+    if not datastore.find_user(email='nibedita.6302@gmail.com'):
         #creating the only admin
-        admin1 = datastore.create_user(email='admin@grocery.com', password=hash_password('admin.12'))
+        admin1 = datastore.create_user(email='nibedita.6302@gmail.com', password=hash_password('admin.12'))
         datastore.add_role_to_user(admin1, 'admin')
     db.session.commit()    
 
