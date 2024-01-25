@@ -8,7 +8,7 @@ from ...data.models.inventory import Category
 from ...data.models.users import Logs
 from ...data.models.requests import RequestOnCategory
 from celery.schedules import crontab
-print('crontab',crontab)
+# print('crontab',crontab)
 
 @celery.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
@@ -27,6 +27,8 @@ def implementRequest():
         return 'No Approved Requests Yet!'
     for r in requests:
         if r.action == 'POST':
+            if Category.query.filter_by(c_name=r.c_name).first() is None:
+                return 'Unable to Create Category'
             latest_id = Category.query.order_by(Category.c_id.desc()).first().c_id
             # print('latest_id',latest_id)
             extension = '.'+(r.c_image).split('.')[-1]
@@ -74,11 +76,12 @@ def implementRequest():
         else:       #DELETE
             c1 = Category.query.get(r.c_id)
             if c1.product_count>0:
-                return 'Unable to Delete!'
+                return 'Unable to delete category!'
             db.session.delete(c1)
             log = Logs(user_id=r.requester, action='DELETE', table_name='category',
                         action_on=r.c_id, date=datetime.now(), is_admin=True)
             r.status = 2          # Implemented
             db.session.add(log)            
             db.session.commit()
+    
     return 'All Processed!'

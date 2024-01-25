@@ -11,7 +11,7 @@ from application.jobs import workers
 #from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_login import LoginManager
 # from flask_security import utils
-#from flask_sse import sse
+# from flask_sse import sse
 from application.redis_cache import get_cache
 
 # import logging
@@ -29,8 +29,8 @@ def create_app():
       app.logger.info("Currently no production config is setup.")
       raise Exception("Currently no production config is setup.")
     elif os.getenv('ENV', "development") == "stage":
-      app.logger.info("Staring stage.")
-      print("Staring  stage")
+      app.logger.info("Staring Stage.")
+      print("Staring  Stage")
       app.config.from_object(StageConfig)
       print("pushed config")
     else:
@@ -80,6 +80,9 @@ login_manager = LoginManager()
 
 app ,api, celery= create_app()
 
+#setup blueprint
+# app.register_blueprint(sse,url_prefix='/stream')
+
 # import models in main
 from application.data.models.users import *
 from application.data.models.offers import *
@@ -88,12 +91,18 @@ from application.data.models.inventory import *
 from application.data.models.requests import *
 from application.data.default_data import create_first, new_customer_offer
 
-with app.app_context():
-  db.create_all()
-  print('All models created.')
-  create_first() #create default roles and admin
-  new_customer_offer() #default new customer offer
-  print('All default data created.')
+try:
+  with app.app_context():
+    db.create_all()
+    print('All models created.')
+    create_first() #create default roles and admin
+    new_customer_offer() #default new customer offer
+    print('All default data created.')
+except Exception as e:
+  if 'UNIQUE constraint failed' in str(e):
+    print('Ignored Unique Constraint Failed due to duplicate request')
+  else:
+    raise Exception(e)
 
 @login_manager.user_loader
 def load_user(user_id):

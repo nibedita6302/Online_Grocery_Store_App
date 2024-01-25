@@ -5,12 +5,10 @@ class RequestOnCategory(db.Model):
     __tablename__='request_on_category'
 
     def __init__(self, action, requester, req_date, c_id=None, c_name='', c_image=''):
-        if self.isProperRequest(action, c_id, c_name, c_image):
-            if self.isDuplicateRequest(action, c_id, c_name, c_image):
-                print('in')
-                raise ValueError("Request already exists")
-        else:
-            raise ValueError("Invalid Request! Please try again.")
+        if self.isDuplicateRequest(action, c_id, c_name, c_image):
+            print('in')
+            raise ValueError("Request already exists")
+        self.isProperRequest(action, c_id, c_name, c_image)
         
         self.action = action
         if action=='POST':
@@ -49,16 +47,12 @@ class RequestOnCategory(db.Model):
             if c_id is None:
                 return False
             elif not Category.query.get(c_id):
-                print('put-delete')
-                return False
+                raise ValueError("Invalid ID")
             if action=='PUT' and (c_name=='' and c_image==''):
-                print('both none')
-                return False
+                raise ValueError("Some field not filled")
         elif action in 'POST':
             if c_image == '' or c_name=='' :
-                print('post')
-                return False
-        return True
+                raise ValueError("All fields compulsory")  
     
     def isDuplicateRequest(self, action, c_id, c_name, c_image):
         # not duplicate

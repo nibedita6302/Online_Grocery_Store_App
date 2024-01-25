@@ -49,39 +49,26 @@ class RequestConfirmation(Resource):
             print(formData)
             if not validateRequest(formData):
                 return {'message':'Category name must be one word'}, 202
-            """ category_ids = [c.c_id for c in Category.query.all()]
-            if (formData['action'] in ['PUT','DELETE']) and (int(formData['c_id']) in category_ids):
-                print('in3')
-                return {'message':'Invalid Category ID'}, 202 """
             d = datetime.now()
             img_path = None
             if 'c_image' in request.files:
-                print('in4')
                 image = request.files['c_image']
                 folder = app.config['UPLOAD_FOLDER']+'pendingUpload/'
                 count = len(os.listdir(folder))
                 if image.filename != "":
                     img_path = image.filename.split('.')[0]+'_'+str(count)+'.'+image.filename.split('.')[-1]
-                    print(img_path)
+                    # print(img_path)
                     image.save(os.path.join(folder,img_path))  
                     r1 = RequestOnCategory(**formData, c_image=img_path, requester=current_user.id,
                                             req_date=d)
             if img_path is None:
-                print('image path None')
+                # print('image path None')
                 r1 = RequestOnCategory(**formData, requester=current_user.id, req_date=d)
             db.session.add(r1)
             db.session.commit()
             return 200
         except ValueError as ve:
             return {'message':str(ve)}, 202
-        """ except Exception as e:
-            if ('UNIQUE constraint failed' in str(e.args[0])):
-                print('UNIQUE constraint error ignored!')
-                return
-            else:
-                print('Other Error')
-                print(e)
-                return {'message': 'Creation Failed! Some Error Occured.'}, 500 """
     
 class ReturnConfirmation(Resource):
     def __init__(self):
@@ -93,17 +80,21 @@ class ReturnConfirmation(Resource):
     def put(self, cn_id):
         args = self.parser.parse_args()
         r1 = RequestOnCategory.query.get(cn_id)
-        if r1.action == 'DELETE' and  args['status']==1:
-            c1 = Category.query.get(r1.c_id)
-            if c1.product_count>0:
-                return {'message':'Category has active products, Please deny request!'}, 202
-        elif r1.action == 'PUT' and  args['status']==1 and not Category.query.get(r1.c_id):
-            return {'message':'Category has been deleted, Please deny request!'}, 202
+        print(Category.query.filter_by(c_name=r1.c_name).first(), r1.c_name)
+        if args['status']==1:
+            if r1.action == 'DELETE':
+                c1 = Category.query.get(r1.c_id)
+                if c1.product_count>0:
+                    return {'message':'Category has active products, Please deny request!'}, 202
+            elif r1.action == 'PUT' and not Category.query.get(r1.c_id):
+                return {'message':'Category has been deleted, Please deny request!'}, 202
+            elif r1.action=="POST" and (Category.query.filter_by(c_name=r1.c_name).first() is not None):
+                print('in post')
+                return {'message':'Category already exists, Please deny request!'}, 202
         r1.status = args['status']
         db.session.commit()
         if args['status']==1:
-            # print('in')
             return {'message':'Approved Request ID:'+str(r1.cn_id)}, 200
-        # print('here')
-        return {'message':'Denied Request ID:'+str(r1.cn_id)}, 200
+        else:
+            return {'message':'Denied Request ID:'+str(r1.cn_id)}, 200
 
