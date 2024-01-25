@@ -22,7 +22,7 @@
         <h1> My Shopping List </h1> <hr>
         <h5 v-if="this.products.length<1">My Cart is Empty, Hurry Up and buy something!! </h5>
         <div v-for="p in products">
-            <div class="card mb-3">
+            <div class="card mb-3" id="shoppingList">
             <div class="row g-0">
                 <div class="col-md-4">
                     <img :src="get_url(p.p_image)" class="img-fluid rounded-start">
@@ -68,7 +68,6 @@
                             BUY NOW
                         </button>
                     </div>
-                    {{ this.offer_details }}
                     <div v-if="this.offer_details!==null" class="card-body">
                         <h5 class="card-title">Offer Applied: {{ this.offer_details.o_name }}</h5>
                         <p class="card-text">Discount: {{ this.offer_details.discount }}% </p>
@@ -217,30 +216,20 @@ export default {
 </script>
 
 <style scoped>
-    #top {
-        padding: 30px;
+    #shoppingList {
+        height: 200px;
+        width: 500px;
     }
     h3{
         text-align: center;
-    }
-    #in-btn{
-        height: 20px;
-        width: 15px;
-    }
-    #out-btn{
-        height: 25px;
-        width: 25px;
     }
     button{
         z-index: 2;
         position: relative;
     }
     img{
-        max-height: 250px;
-        max-width: 450px;
-    }
-    router-link{
-        color: white;
+        max-height: 150px;
+        max-width: 150px;
     }
 </style>
   

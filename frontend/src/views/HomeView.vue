@@ -26,7 +26,7 @@ export default {
     CategoryList,
     CreateInventory,
     ProductSetView
-},
+  },
   methods:{
   },
   computed: {

@@ -24,7 +24,11 @@
             <div class="card h-100">
                 <img :src="get_url(p.p_image)" class="card-img-top" :alt="p.p_image">
                 <div class="card-body">
-                    <h5 class="card-title">{{ p.p_name }}</h5>
+                    <div class="row">
+                        <div class="col-sm-4"><h5 class="card-title">{{ p.p_name }}</h5></div>
+                        <div class="col-sm-8"><a class="card-title" href="#"
+                            @click="openReview(p.p_id)">Open Reviews</a></div>
+                    </div>
                     <em class="card-text">{{ p.brand }}</em>
                     <p class="card-text">{{p.p_description}} | {{p.p_qty}} {{p.unit}} | ₹{{p.price}} </p>
                     <p v-if="p.stock_remaining>5" class="card-text" style="color:green;">In Stock</p>
@@ -80,6 +84,7 @@ export default {
     },
     methods:{
         ...mapMutations('formdata',['STORE_FORM_DATA']),
+        ...mapMutations('product_display',['SET_REVIEW_P_ID']),
 
         get_url(img){
             return require('@/assets/upload/'+img); 
@@ -106,6 +111,10 @@ export default {
             }else{
                 this.deleteProduct(p.p_id);
             }
+        },
+        openReview(p_id){
+            // console.group(p_id)
+            this.SET_REVIEW_P_ID({p_id:p_id})
         },
         async addToCart(p_id){
             await fetch('http://10.0.2.15:8000/api/customer/'+
@@ -151,10 +160,7 @@ export default {
         ...mapGetters('searching',['GET_SEARCH_OUTPUT']),    
         ...mapState('searching',['showProducts']),   
         ...mapGetters('product_display',['GET_CATEGORY_ID','GET_PRODUCT_LIST']) 
-    },/* 
-    beforeRouteLeave(to, from, next){
-        
-    } */
+    }
 }
 </script>
 

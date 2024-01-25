@@ -17,14 +17,5 @@ export default {
     SearchBar
   }
 }
-
 </script>
 
-<style scoped>
-  /* #main{
-    background-image: url('./assets/background.jpg');
-    background-repeat: no-repeat;
-    background-size: contain;
-    height: 100vh;
-  } */
-</style>

@@ -151,9 +151,6 @@ export default {
                 console.log(this.msg)
             }).catch((error)=>{console.log(error);})
         },
-        async sendApproval(){
-
-        },
         async get_products_under_category(c_id){
             try{
                 const res = await fetch('http://10.0.2.15:8000/api/product/category/'+c_id,{
