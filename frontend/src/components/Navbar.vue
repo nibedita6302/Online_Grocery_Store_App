@@ -24,18 +24,14 @@
             active-class="active" class="nav-link">Orders</router-link>
           </li>
           <li class="nav-item">
-            <router-link to='#' v-if="this.GET_USER_ROLE=='customer'" 
-            active-class="active" class="nav-link">Profile</router-link>
-          </li>
-          <li class="nav-item">
             <router-link to='/requests' v-if="this.GET_USER_ROLE=='admin'||this.GET_USER_ROLE=='store_manager'"
              active-class="active" class="nav-link">Requests </router-link>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <router-link to='#' v-if="this.GET_USER_ROLE=='admin'" active-class="active" class="nav-link">
               Logs & Reports
             </router-link>
-          </li>
+          </li> -->
           <li class="nav-item">
             <router-link to='/login' active-class="active" class="nav-link">Login</router-link>
           </li>
