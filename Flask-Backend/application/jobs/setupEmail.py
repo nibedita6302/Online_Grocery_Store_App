@@ -39,8 +39,8 @@ def sendEmail(receiver_email, email_type='reminder'):
     if email_type=='report':
         # open the file to be sent  
         pdf=create_pdf()
-        filename = f"{month}.pdf"
         month = datetime.now().strftime('%B')
+        filename = f"{month}.pdf"
         attachment = open(f"./PDF_Report/{pdf}", "rb") 
         
         # instance of MIMEBase and named as p 
