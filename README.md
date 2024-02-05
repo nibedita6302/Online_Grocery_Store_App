@@ -1,6 +1,7 @@
 # Online Grocery Store App ~ Version 2
 
 ## About Project
+Developed wireframe of a web-app for buying groceries online and updating of items sold by store managers. Used SQLite for database management and robust use of Flask and SQLAlchemy (Python) for backend for managing users, searching product, managing categories of product, selecting multiple items and admin management. Engineered a robust API using RESTful principles and login with authentication and authorization. User interface created using HTML, CSS, Bootstrap and Vue.js. Implemented Redis for caching. Currently working on Celery for asynchronous task processing, real-time event notifications and Webhooks for handling messaging queues.   
 
 ## README 
 
