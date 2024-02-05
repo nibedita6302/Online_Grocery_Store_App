@@ -3,5 +3,5 @@ from flask import current_app as app
 
 @app.route('/test',methods=['GET','POST'])
 def test_celery_func():
-    job = task.test.delay()
+    job = task.download_product_csv.delay()
     return str(job), 200

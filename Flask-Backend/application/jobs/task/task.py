@@ -2,36 +2,42 @@ import os
 import shutil
 import csv
 from datetime import datetime, date
-from flask import current_app as app
-from .workers import celery
-from ..data.database import db
-from .setupEmail import sendEmail 
-from ..data.models.inventory import Category, Products
-from ..data.models.shopping import Transaction
-from ..data.models.users import Users
-from ..data.models.users import Logs
-from ..data.models.requests import RequestOnCategory
+from ..workers import celery
+from ...data.database import db
+from ..setupEmail import sendEmail 
+from ...data.models.inventory import Category, Products
+from ...data.models.shopping import Transaction
+from ...data.models.users import Users
+from ...data.models.users import Logs
+from ...data.models.requests import RequestOnCategory
 from celery.schedules import crontab
 print('crontab',crontab)
 
 @celery.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(crontab(minute='*/15'), 
-            implementRequest.s(), name='Implement Category Requests Every 5 minutes')
+    sender.add_periodic_task(30,implementRequest.s(), name='Implement Category Requests Every 30 second')
     
-    sender.add_periodic_task(crontab(minute=30, hour=21), 
+    sender.add_periodic_task(crontab(minute='*/5'), 
             send_customer_reminder.s(), name='Send Customer Reminder everyday at 4pm')
     
-    sender.add_periodic_task(crontab(30, 21, day_of_month='25'), 
+    sender.add_periodic_task(crontab(30, 23, day_of_month='*/5'), 
             send_monthly_report.s(), name='Send Monthly Report to Admin at on 25th\
                                              of every month at 4pm')
+
+    # sender.add_periodic_task(crontab(minute=20, hour=23), 
+    #         send_customer_reminder.s(), name='Send Customer Reminder everyday at 4pm')
+    
+    # sender.add_periodic_task(crontab(30, 23, day_of_month='25'), 
+    #         send_monthly_report.s(), name='Send Monthly Report to Admin at on 25th\
+    #                                          of every month at 4pm')
+    
 @celery.task()
 def send_customer_reminder():
     # send daily customer reminder is no activity
     trans = Transaction.query.all()
     print(trans)
     for t in trans:
-        if datetime.strptime(t.bought_date, "%Y-%m-%\d %H:%M:%S.%/f").date() == date.today():
+        if datetime.strptime(t.bought_date, f"%Y-%m-%d %H:%M:%S.%f").date() == date.today():
             print(t.user_id, t.bought_date) 
             user = Users.query.get(t.user_id)
             sendEmail(reciever_email=user.email)
@@ -79,6 +85,7 @@ def download_product_csv():
             writer.writerow(row)
 
     return csv_file_path
+ 
 
 @celery.task()
 def implementRequest():
