@@ -74,8 +74,10 @@ $ npm run serve  # start vue.js server
 There is only One Admin allowed in the application with following credentials
 *
 - Admin Login Credentials:
-- Email: <s>nibedita.6302@gmail.com</s>
-- Password: admin.12*
+- Fork Repository
+- Go to `Flask-Backend/application/data/default_data.py`
+- Change `# put your email here` with your own email and `# put your password here` with your password
+- *Help: Check code line number 14 and 16*
 
 Note:- For registering Store Managers, apply for approval through login page then, login as Admin 
 to accept the Store Manager's approval. Now you can successfully login as a Store Manager!
