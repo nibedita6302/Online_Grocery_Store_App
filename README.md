@@ -8,7 +8,7 @@ Developed wireframe of a web-app for buying groceries online and updating of ite
 <img alt="Static Badge" src="https://img.shields.io/badge/SQLAlchemy-%23eb3a1f?style=plastic&logo=SQLAlchemy&logoColor=black" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Flask-white?style=plastic&logo=flask&logoColor=black" height="25"> 
 <img alt="Static Badge" src="https://img.shields.io/badge/Flask_Security_too-black?style=plastic&logo=flask&logoColor=white" height="25">
-<img alt="Static Badge" src="https://img.shields.io/badge/Redis-red?style=plastic&logo=redis&logoColor=white" height="25"> 
+<img alt="Static Badge" src="https://img.shields.io/badge/Redis-%23ae1710?style=plastic&logo=redis&logoColor=white" height="25"> 
 <img alt="Static Badge" src="https://img.shields.io/badge/Celery-brightgreen?style=plastic&logo=celery&logoColor=black" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Messaging_Queues-orange?style=plastic&logo=stackexchange&logoColor=white" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Git-%23ae1710?style=plastic&logo=git&logoColor=white" height="25">
