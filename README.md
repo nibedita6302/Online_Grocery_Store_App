@@ -72,8 +72,7 @@ $ npm run serve  # start vue.js server
 *http://localhost:8000/* for Home page and explore!
 
 There is only One Admin allowed in the application with following credentials
-*
-- Admin Login Credentials:
+#### Admin Login Credentials:
 - Fork Repository
 - Go to `Flask-Backend/application/data/default_data.py`
 - Change `# put your email here` with your own email and `# put your password here` with your password
