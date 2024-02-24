@@ -8,8 +8,8 @@ from ..jobs.createPDF import create_pdf
 
 def sendEmail(receiver_email, email_type='reminder'):
     # Email account details
-    sender_email = "nibedita.6302@gmail.com"
-    app_password = "tjut zhyb jyuo vrum"  # Replace with your generated App Password
+    sender_email = "Your Email goes here"
+    app_password = "Replace with your Gmail App Password"
 
     # Set up the email details
     if email_type=='reminder':
@@ -39,8 +39,8 @@ def sendEmail(receiver_email, email_type='reminder'):
     if email_type=='report':
         # open the file to be sent  
         pdf=create_pdf()
-        filename = f"{month}.pdf"
         month = datetime.now().strftime('%B')
+        filename = f"{month}.pdf"
         attachment = open(f"./PDF_Report/{pdf}", "rb") 
         
         # instance of MIMEBase and named as p 

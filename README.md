@@ -8,7 +8,7 @@ Developed wireframe of a web-app for buying groceries online and updating of ite
 <img alt="Static Badge" src="https://img.shields.io/badge/SQLAlchemy-%23eb3a1f?style=plastic&logo=SQLAlchemy&logoColor=black" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Flask-white?style=plastic&logo=flask&logoColor=black" height="25"> 
 <img alt="Static Badge" src="https://img.shields.io/badge/Flask_Security_too-black?style=plastic&logo=flask&logoColor=white" height="25">
-<img alt="Static Badge" src="https://img.shields.io/badge/Redis-red?style=plastic&logo=redis&logoColor=white" height="25"> 
+<img alt="Static Badge" src="https://img.shields.io/badge/Redis-%23ae1710?style=plastic&logo=redis&logoColor=white" height="25"> 
 <img alt="Static Badge" src="https://img.shields.io/badge/Celery-brightgreen?style=plastic&logo=celery&logoColor=black" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Messaging_Queues-orange?style=plastic&logo=stackexchange&logoColor=white" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/Git-%23ae1710?style=plastic&logo=git&logoColor=white" height="25">
@@ -21,7 +21,7 @@ Developed wireframe of a web-app for buying groceries online and updating of ite
 
 ## README 
 
-Open Linux terminal. Make sure to have __python3__ and __pip3__ installed. Follow the following command to 
+Open Linux terminal. Make sure to have __python3__, __pip3__, __SQLite2__ and __Redis Server__ installed. Follow the following command to 
 start the Online Grocery Store application.
 
 ### ------ TERMINAL 1 ------
@@ -72,11 +72,12 @@ $ npm run serve  # start vue.js server
 *http://localhost:8000/* for Home page and explore!
 
 There is only One Admin allowed in the application with following credentials
-*
-- Admin Login Credentials:
-- Email: <s>nibedita.6302@gmail.com</s>
-- Password: admin.12*
-
+#### Admin Login Credentials:
+- Fork Repository
+- Go to `Flask-Backend/application/data/default_data.py` *(Help: Check code line number 14 and 16)*
+- Change `# put your email here` with your own email and `# put your password here` with your password
+- Go to `Flask-Backend/application/jobs/setupEmail.py` *(Help: Check code line number 11-12)*
+- Change `Your Email goes here` with your own email and `Replace with your Gmail App Password` with your Gmail App Password. 
+    
 Note:- For registering Store Managers, apply for approval through login page then, login as Admin 
 to accept the Store Manager's approval. Now you can successfully login as a Store Manager!
-

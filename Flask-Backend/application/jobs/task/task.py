@@ -2,6 +2,7 @@ import os
 import shutil
 import csv
 from datetime import datetime, date
+from flask import current_app as app
 from ..workers import celery
 from ...data.database import db
 from ..setupEmail import sendEmail 
