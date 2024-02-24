@@ -21,7 +21,7 @@ Developed wireframe of a web-app for buying groceries online and updating of ite
 
 ## README 
 
-Open Linux terminal. Make sure to have __python3__ and __pip3__ installed. Follow the following command to 
+Open Linux terminal. Make sure to have __python3__, __pip3__, __SQLite2__ and __Redis Server__ installed. Follow the following command to 
 start the Online Grocery Store application.
 
 ### ------ TERMINAL 1 ------
