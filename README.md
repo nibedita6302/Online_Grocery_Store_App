@@ -74,10 +74,10 @@ $ npm run serve  # start vue.js server
 There is only One Admin allowed in the application with following credentials
 #### Admin Login Credentials:
 - Fork Repository
-- Go to `Flask-Backend/application/data/default_data.py`
+- Go to `Flask-Backend/application/data/default_data.py` *(Help: Check code line number 14 and 16)*
 - Change `# put your email here` with your own email and `# put your password here` with your password
-- *Help: Check code line number 14 and 16*
-
+- Go to `Flask-Backend/application/jobs/setupEmail.py` *(Help: Check code line number 11-12)*
+- Change `Your Email goes here` with your own email and `Replace with your Gmail App Password` with your Gmail App Password. 
+    
 Note:- For registering Store Managers, apply for approval through login page then, login as Admin 
 to accept the Store Manager's approval. Now you can successfully login as a Store Manager!
-
