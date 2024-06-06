@@ -3,6 +3,9 @@
 ## About Project
 Developed wireframe of a web-app for buying groceries online and updating of items sold by store managers. Used SQLite for database management and robust use of Flask and SQLAlchemy (Python) for backend for managing users, searching product, managing categories of product, selecting multiple items and admin management. Engineered a robust API using RESTful principles and login with authentication and authorization. User interface created using HTML, CSS, Bootstrap and Vue.js. Implemented Redis for caching. Currently working on Celery for asynchronous task processing, real-time event notifications and Webhooks for handling messaging queues.   
 
+## Database Relationship Overview
+<img alt="Static Badge" src="https://github.com/nibedita6302/Online_Grocery_Store_App/assets/145376728/1de7959f-cb12-4070-835e-6b62ce506a35" height="500">
+
 ## Tech Stack
 <img alt="Static Badge" src="https://img.shields.io/badge/Python-blue?style=plastic&logo=python&logoColor=yellow" height="25"> <img alt="Static Badge" src="https://img.shields.io/badge/SQLite_3-brightgreen?style=plastic&logo=sqlite&logoColor=white" height="25">
 <img alt="Static Badge" src="https://img.shields.io/badge/SQLAlchemy-%23eb3a1f?style=plastic&logo=SQLAlchemy&logoColor=black" height="25">
